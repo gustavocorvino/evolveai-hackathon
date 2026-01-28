@@ -1,0 +1,215 @@
+template:
+  id: discovery-avanade-template
+  name: Documento de Discovery Avanade
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/discovery.md
+    title: "{{project_name}} Documento de Discovery Avanade"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: visao-geral
+    title: Visão Geral do Projeto
+    instruction: |
+      Estabeleça o contexto estratégico do projeto. Documente os objetivos de negócio, justificativa estratégica e alinhamento com metas organizacionais. 
+      Inclua o sponsor do projeto, orçamento aprovado e timeline inicial. Esta seção deve responder "POR QUE" este projeto é importante para a organização.
+    sections:
+      - id: objetivos-negocio
+        title: Objetivos de Negócio
+        type: bullet-list
+        instruction: Lista de objetivos estratégicos de alto nível que este projeto deve atingir
+      - id: justificativa
+        title: Justificativa Estratégica
+        type: paragraphs
+        instruction: 2-3 parágrafos explicando por que este projeto é necessário agora e como se alinha com estratégia organizacional
+      - id: sponsor-orcamento
+        title: Sponsor e Orçamento
+        type: table
+        instruction: Informações sobre sponsor do projeto, orçamento aprovado, fonte de financiamento
+
+  - id: analise-stakeholders
+    title: Análise de Stakeholders
+    instruction: |
+      Mapeamento completo de todos os stakeholders do projeto. Identifique influenciadores, tomadores de decisão, usuários finais e equipes técnicas.
+      Para cada stakeholder, documente seu papel, influência, interesse e estratégia de engajamento.
+    sections:
+      - id: mapa-stakeholders
+        title: Mapeamento de Stakeholders
+        type: table
+        instruction: Tabela com Nome, Cargo, Organização, Papel no Projeto, Nível de Influência (Alto/Médio/Baixo), Interesse no Projeto, Estratégia de Engajamento
+      - id: matriz-raci
+        title: Matriz RACI
+        type: table
+        instruction: Matriz de responsabilidades (Responsible, Accountable, Consulted, Informed) para principais decisões e entregáveis do projeto
+      - id: cronograma-comunicacao
+        title: Cronograma de Comunicação
+        type: table
+        instruction: Frequência e formato de comunicação com cada grupo de stakeholders
+
+  - id: estado-atual
+    title: Análise do Estado Atual (As-Is)
+    instruction: |
+      Documentação detalhada do estado atual dos sistemas, processos e tecnologias existentes.
+      Identifique sistemas legados, integrações existentes, dados, limitações técnicas e restrições operacionais.
+    sections:
+      - id: arquitetura-atual
+        title: Arquitetura Atual
+        type: paragraphs
+        instruction: Descrição da arquitetura técnica atual, sistemas principais, integrações e fluxo de dados
+      - id: processos-atuais
+        title: Processos de Negócio Atuais
+        type: bullet-list
+        instruction: Lista dos principais processos de negócio existentes que serão impactados
+      - id: limitacoes-restricoes
+        title: Limitações e Restrições
+        type: bullet-list
+        instruction: Limitações técnicas, orçamentárias, regulamentares e operacionais identificadas
+      - id: sistemas-legados
+        title: Sistemas Legados
+        type: table
+        instruction: Inventário de sistemas existentes com nome, tecnologia, versão, criticidade, plano de migração/integração
+
+  - id: requisitos-negocio
+    title: Requisitos de Negócio
+    instruction: |
+      Levantamento completo dos requisitos funcionais e não-funcionais do projeto.
+      Organize por área de negócio e priorize conforme criticidade. Inclua critérios de aceitação de alto nível.
+    sections:
+      - id: requisitos-funcionais
+        title: Requisitos Funcionais
+        type: table
+        instruction: Tabela com ID, Descrição, Área de Negócio, Prioridade (Crítico/Alto/Médio/Baixo), Critério de Aceitação
+      - id: requisitos-nao-funcionais
+        title: Requisitos Não-Funcionais
+        type: table
+        instruction: Performance, Segurança, Usabilidade, Confiabilidade, Escalabilidade, Manutenibilidade
+      - id: regras-negocio
+        title: Regras de Negócio
+        type: bullet-list
+        instruction: Regras de negócio específicas que devem ser implementadas no sistema
+      - id: conformidade-regulamentacao
+        title: Conformidade e Regulamentação
+        type: bullet-list
+        instruction: Requisitos de compliance (LGPD, SOX, regulamentações setoriais)
+
+  - id: analise-gaps
+    title: Análise de Gaps
+    instruction: |
+      Comparação entre estado atual e estado desejado futuro. Identifique lacunas em processos, tecnologia,
+      capacidades organizacionais e recursos. Documente o que precisa ser construído, integrado ou migrado.
+    sections:
+      - id: gaps-tecnologicos
+        title: Gaps Tecnológicos
+        type: table
+        instruction: Diferenças entre capacidades atuais e necessárias, com impacto e complexidade de resolução
+      - id: gaps-processos
+        title: Gaps de Processos
+        type: table
+        instruction: Processos que precisam ser criados, modificados ou automatizados
+      - id: gaps-capacidades
+        title: Gaps de Capacidades
+        type: table
+        instruction: Habilidades, recursos ou conhecimentos que precisam ser desenvolvidos ou adquiridos
+
+  - id: viabilidade
+    title: Análise de Viabilidade
+    instruction: |
+      Avaliação da viabilidade técnica, econômica e operacional do projeto.
+      Inclua análise de ROI, riscos principais e alternativas consideradas.
+    sections:
+      - id: viabilidade-tecnica
+        title: Viabilidade Técnica
+        type: paragraphs
+        instruction: Avaliação se a solução proposta é tecnicamente viável com recursos e timeline disponíveis
+      - id: viabilidade-economica
+        title: Viabilidade Econômica
+        type: table
+        instruction: Análise de custos vs. benefícios, ROI esperado, payback period
+      - id: viabilidade-operacional
+        title: Viabilidade Operacional
+        type: paragraphs
+        instruction: Capacidade organizacional de implementar e manter a solução proposta
+      - id: alternativas-consideradas
+        title: Alternativas Consideradas
+        type: table
+        instruction: Outras opções avaliadas, razões para não seleção
+
+  - id: riscos-mitigacao
+    title: Riscos e Estratégias de Mitigação
+    instruction: |
+      Identificação proativa de riscos técnicos, de negócio, regulamentares e operacionais.
+      Para cada risco, defina probabilidade, impacto e estratégia específica de mitigação.
+    sections:
+      - id: registro-riscos
+        title: Registro de Riscos
+        type: table
+        instruction: ID, Descrição do Risco, Categoria, Probabilidade (Alto/Médio/Baixo), Impacto (Alto/Médio/Baixo), Score de Risco, Estratégia de Mitigação, Owner
+      - id: matriz-riscos
+        title: Matriz de Riscos
+        type: table
+        instruction: Matriz visual de probabilidade vs impacto para priorização
+      - id: plano-contingencia
+        title: Planos de Contingência
+        type: bullet-list
+        instruction: Planos específicos para os riscos de maior criticidade
+
+  - id: cronograma-marcos
+    title: Cronograma e Marcos Principais
+    instruction: |
+      Timeline de alto nível do projeto com marcos principais e dependências críticas.
+      Identifique quality gates entre fases e critérios de aprovação para prosseguir.
+    sections:
+      - id: fases-projeto
+        title: Fases do Projeto
+        type: table
+        instruction: Nome da Fase, Duração Estimada, Principais Entregas, Critérios de Entrada, Critérios de Saída
+      - id: marcos-principais
+        title: Marcos Principais
+        type: table
+        instruction: Marco, Data Alvo, Descrição, Stakeholders Envolvidos, Critério de Sucesso
+      - id: dependencias-criticas
+        title: Dependências Críticas
+        type: bullet-list
+        instruction: Dependências externas, aprovações regulamentares, integrações com terceiros
+
+  - id: proximos-passos
+    title: Próximos Passos e Recomendações
+    instruction: |
+      Recomendações claras para as próximas fases do projeto. Defina aprovações necessárias,
+      recursos a serem alocados e preparação para fase de Design.
+    sections:
+      - id: recomendacoes
+        title: Recomendações
+        type: bullet-list
+        instruction: Recomendações específicas baseadas nos achados do discovery
+      - id: aprovacoes-necessarias
+        title: Aprovações Necessárias
+        type: table
+        instruction: Aprovação, Responsável, Prazo, Status
+      - id: preparacao-design
+        title: Preparação para Fase de Design
+        type: bullet-list
+        instruction: Recursos, informações e preparativos necessários para iniciar fase de design
+
+  - id: apendices
+    title: Apêndices
+    instruction: |
+      Documentação de apoio incluindo entrevistas realizadas, documentos de referência consultados,
+      glossário de termos técnicos e de negócio.
+    sections:
+      - id: entrevistas-realizadas
+        title: Entrevistas Realizadas
+        type: table
+        instruction: Data, Entrevistado, Cargo, Principais Insights
+      - id: documentos-referencia
+        title: Documentos de Referência
+        type: bullet-list
+        instruction: Lista de documentos consultados durante o discovery
+      - id: glossario
+        title: Glossário
+        type: table
+        instruction: Termo, Definição - termos técnicos e de negócio utilizados no documento

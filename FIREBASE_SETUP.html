@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔥 Guia de Configuração Firebase - EvolveAI Hackathon</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0A1628 0%, #1E3A8A 100%);
+      color: #F9FAFB;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    
+    .header h1 {
+      font-size: 48px;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #06B6D4, #8B5CF6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .header p {
+      font-size: 20px;
+      opacity: 0.8;
+    }
+    
+    .step {
+      background: rgba(31, 41, 55, 0.8);
+      border: 2px solid #06B6D4;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 8px 32px rgba(6, 182, 212, 0.2);
+    }
+    
+    .step-number {
+      display: inline-block;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #06B6D4, #8B5CF6);
+      border-radius: 50%;
+      text-align: center;
+      line-height: 48px;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+    
+    .step h2 {
+      font-size: 28px;
+      margin-bottom: 16px;
+      color: #06B6D4;
+    }
+    
+    .step p {
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 16px;
+      opacity: 0.9;
+    }
+    
+    .code-block {
+      background: #0A1628;
+      border: 2px solid #06B6D4;
+      border-radius: 8px;
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      overflow-x: auto;
+      margin: 16px 0;
+      position: relative;
+    }
+    
+    .code-block pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .code-block .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #06B6D4;
+      color: #0A1628;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+      transition: all 0.3s;
+    }
+    
+    .code-block .copy-btn:hover {
+      background: #0891B2;
+      transform: scale(1.05);
+    }
+    
+    .highlight {
+      color: #FBBF24;
+      font-weight: bold;
+    }
+    
+    .warning {
+      background: rgba(251, 191, 36, 0.1);
+      border: 2px solid #FBBF24;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    
+    .warning strong {
+      color: #FBBF24;
+    }
+    
+    .success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 2px solid #10B981;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    
+    .success strong {
+      color: #10B981;
+    }
+    
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #06B6D4, #8B5CF6);
+      color: white;
+      padding: 16px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 18px;
+      transition: all 0.3s;
+      box-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(6, 182, 212, 0.6);
+    }
+    
+    .screenshot {
+      border: 3px solid #06B6D4;
+      border-radius: 12px;
+      max-width: 100%;
+      margin: 16px 0;
+      box-shadow: 0 8px 24px rgba(6, 182, 212, 0.3);
+    }
+    
+    ul {
+      margin: 16px 0;
+      padding-left: 32px;
+    }
+    
+    li {
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔥 Guia de Configuração Firebase</h1>
+      <p>Configure em 5 minutos e comece a usar!</p>
+    </div>
+    
+    <!-- PASSO 1 -->
+    <div class="step">
+      <div class="step-number">1</div>
+      <h2>Acessar Firebase Console</h2>
+      <p>Abra o navegador e acesse o Firebase Console:</p>
+      <p style="text-align: center; margin: 24px 0;">
+        <a href="https://console.firebase.google.com" target="_blank" class="btn">
+          🚀 Abrir Firebase Console
+        </a>
+      </p>
+      <p>Faça login com sua conta Google (ou crie uma).</p>
+    </div>
+    
+    <!-- PASSO 2 -->
+    <div class="step">
+      <div class="step-number">2</div>
+      <h2>Criar Novo Projeto</h2>
+      <p>No Firebase Console:</p>
+      <ul>
+        <li>Clique em <strong>"Adicionar projeto"</strong> ou <strong>"Create a project"</strong></li>
+        <li>Nome do projeto: <span class="highlight">evolveai-hackathon</span></li>
+        <li>Desabilite <strong>Google Analytics</strong> (não é necessário para este projeto)</li>
+        <li>Clique em <strong>"Criar projeto"</strong></li>
+        <li>Aguarde alguns segundos até o projeto ser criado</li>
+      </ul>
+      <div class="warning">
+        <strong>⚠️ Nota:</strong> Se já tem um projeto Firebase, pode usar ele em vez de criar um novo.
+      </div>
+    </div>
+    
+    <!-- PASSO 3 -->
+    <div class="step">
+      <div class="step-number">3</div>
+      <h2>Habilitar Firestore Database</h2>
+      <p>No menu lateral do projeto, clique em <strong>"Firestore Database"</strong>:</p>
+      <ul>
+        <li>Clique em <strong>"Criar banco de dados"</strong></li>
+        <li>Modo: Selecione <span class="highlight">"Modo de produção"</span></li>
+        <li>Local: Escolha <span class="highlight">"southamerica-east1 (São Paulo)"</span></li>
+        <li>Clique em <strong>"Ativar"</strong></li>
+        <li>Aguarde alguns segundos até o banco ser criado</li>
+      </ul>
+    </div>
+    
+    <!-- PASSO 4 -->
+    <div class="step">
+      <div class="step-number">4</div>
+      <h2>Habilitar Authentication</h2>
+      <p>No menu lateral, clique em <strong>"Authentication"</strong>:</p>
+      <ul>
+        <li>Clique em <strong>"Começar"</strong> ou <strong>"Get started"</strong></li>
+        <li>Na aba <strong>"Sign-in method"</strong>, procure por <span class="highlight">"Email/Password"</span></li>
+        <li>Clique nele e <strong>ATIVE</strong> a opção</li>
+        <li>Clique em <strong>"Salvar"</strong></li>
+      </ul>
+    </div>
+    
+    <!-- PASSO 5 -->
+    <div class="step">
+      <div class="step-number">5</div>
+      <h2>Obter Credenciais do Firebase</h2>
+      <p>Agora vamos copiar as credenciais:</p>
+      <ul>
+        <li>No menu lateral, clique no <strong>ícone de engrenagem ⚙️</strong> ao lado de "Visão geral do projeto"</li>
+        <li>Clique em <strong>"Configurações do projeto"</strong></li>
+        <li>Role a página até a seção <span class="highlight">"Seus apps"</span></li>
+        <li>Clique no ícone <strong>"</>" (Web)</strong></li>
+        <li>Nome do app: <span class="highlight">EvolveAI Hackathon</span></li>
+        <li><strong>NÃO</strong> marque "Configure Firebase Hosting"</li>
+        <li>Clique em <strong>"Registrar app"</strong></li>
+      </ul>
+      
+      <p style="margin-top: 24px;">Você verá um código JavaScript parecido com este:</p>
+      
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+        <pre>const firebaseConfig = {
+  apiKey: "AIzaSyAbCdEfGhIjKlMnOpQrStUvWxYz1234567",
+  authDomain: "evolveai-hackathon.firebaseapp.com",
+  projectId: "evolveai-hackathon",
+  storageBucket: "evolveai-hackathon.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdef1234567890"
+};</pre>
+      </div>
+      
+      <div class="warning">
+        <strong>⚠️ IMPORTANTE:</strong> Copie TODO o objeto firebaseConfig (as 6 linhas). Você vai precisar desses valores no próximo passo!
+      </div>
+    </div>
+    
+    <!-- PASSO 6 -->
+    <div class="step">
+      <div class="step-number">6</div>
+      <h2>Configurar Aplicação</h2>
+      <p>Agora vamos colocar as credenciais na aplicação:</p>
+      <ul>
+        <li>No VS Code, abra o arquivo: <code class="highlight">src/firebase/config.js</code></li>
+        <li>Localize o trecho com os valores <code>"YOUR_API_KEY_HERE"</code></li>
+        <li>Substitua TODOS os valores pelas credenciais que você copiou no passo anterior</li>
+      </ul>
+      
+      <p style="margin-top: 24px;"><strong>Exemplo de ANTES (valores de exemplo):</strong></p>
+      <div class="code-block">
+        <pre>const firebaseConfig = {
+  apiKey: <span style="color: #EF4444;">"YOUR_API_KEY_HERE"</span>, ❌
+  authDomain: "evolveai-hackathon.firebaseapp.com",
+  projectId: "evolveai-hackathon",
+  storageBucket: "evolveai-hackathon.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdef1234567890"
+};</pre>
+      </div>
+      
+      <p style="margin-top: 24px;"><strong>Exemplo de DEPOIS (com suas credenciais reais):</strong></p>
+      <div class="code-block">
+        <pre>const firebaseConfig = {
+  apiKey: <span style="color: #10B981;">"AIzaSyAbCdEfGhIjKlMnOpQrStUvWxYz1234567"</span>, ✅
+  authDomain: "seu-projeto-real.firebaseapp.com",
+  projectId: "seu-projeto-real",
+  storageBucket: "seu-projeto-real.appspot.com",
+  messagingSenderId: "987654321098",
+  appId: "1:987654321098:web:xyz9876543210"
+};</pre>
+      </div>
+      
+      <div class="warning">
+        <strong>⚠️ ATENÇÃO:</strong> Use os valores DO SEU PROJETO, não copie o exemplo acima!
+      </div>
+    </div>
+    
+    <!-- PASSO 7 -->
+    <div class="step">
+      <div class="step-number">7</div>
+      <h2>Configurar Security Rules</h2>
+      <p>Volte ao Firebase Console e configure as regras de segurança:</p>
+      <ul>
+        <li>No menu lateral, clique em <strong>"Firestore Database"</strong></li>
+        <li>Clique na aba <strong>"Regras"</strong></li>
+        <li>Copie o conteúdo do arquivo <code>firestore.rules</code> do projeto</li>
+        <li>Cole no editor de regras do Firebase</li>
+        <li>Clique em <strong>"Publicar"</strong></li>
+      </ul>
+      
+      <div class="success">
+        <strong>✅ Pronto!</strong> As regras de segurança estão configuradas.
+      </div>
+    </div>
+    
+    <!-- PASSO 8 -->
+    <div class="step">
+      <div class="step-number">8</div>
+      <h2>Popular com 60 Casos de Uso</h2>
+      <p>Para testar a aplicação, você precisa popular o banco com os 60 casos de uso:</p>
+      
+      <p style="margin-top: 16px;"><strong>Opção 1 - Script Automático (RECOMENDADO):</strong></p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button>
+        <pre>node seed-firestore.js</pre>
+      </div>
+      
+      <p style="margin-top: 16px;"><strong>Opção 2 - Manual no Firebase Console:</strong></p>
+      <ul>
+        <li>No Firestore Database, clique em <strong>"Iniciar coleção"</strong></li>
+        <li>ID da coleção: <span class="highlight">useCases</span></li>
+        <li>Adicione documentos manualmente com os campos necessários</li>
+      </ul>
+    </div>
+    
+    <!-- PASSO 9 -->
+    <div class="step">
+      <div class="step-number">9</div>
+      <h2>Testar Aplicação!</h2>
+      <p>Agora é só testar:</p>
+      <ul>
+        <li>Salve o arquivo <code>src/firebase/config.js</code></li>
+        <li>A aplicação vai recarregar automaticamente</li>
+        <li>Acesse: <a href="http://localhost:5173" target="_blank" style="color: #06B6D4;">http://localhost:5173</a></li>
+        <li>Cadastre uma equipe com nome e email</li>
+        <li>Navegue pelos 60 casos de uso</li>
+        <li>Selecione um caso e veja a mágica acontecer! 🚀</li>
+      </ul>
+      
+      <div class="success">
+        <strong>🎉 Parabéns!</strong> Sua aplicação está configurada e funcionando!
+      </div>
+    </div>
+    
+    <!-- TROUBLESHOOTING -->
+    <div class="step" style="border-color: #FBBF24;">
+      <h2 style="color: #FBBF24;">🐛 Problemas Comuns</h2>
+      
+      <p><strong>Erro: "Firebase not configured"</strong></p>
+      <p>→ Você não configurou o arquivo <code>src/firebase/config.js</code> corretamente.</p>
+      
+      <p style="margin-top: 16px;"><strong>Erro: "Permission denied"</strong></p>
+      <p>→ Você não publicou as Security Rules no Firestore.</p>
+      
+      <p style="margin-top: 16px;"><strong>Nenhum caso aparece na galeria</strong></p>
+      <p>→ Você não populou a coleção <code>useCases</code> no Firestore.</p>
+      
+      <p style="margin-top: 16px;"><strong>Erro ao cadastrar equipe</strong></p>
+      <p>→ Verifique se você habilitou Authentication com Email/Password.</p>
+    </div>
+    
+    <div style="text-align: center; margin-top: 60px; padding: 40px; background: rgba(31, 41, 55, 0.5); border-radius: 16px;">
+      <h2 style="color: #06B6D4; margin-bottom: 16px;">🎯 Tudo Pronto!</h2>
+      <p style="font-size: 18px; margin-bottom: 24px;">
+        Agora você tem uma aplicação completa de seleção de casos de uso com Firebase!
+      </p>
+      <p style="opacity: 0.7;">
+        Desenvolvido por <strong>Tiago - Dev Full Stack Avanade</strong> 💻🚀
+      </p>
+    </div>
+  </div>
+  
+  <script>
+    function copyCode(button) {
+      const codeBlock = button.parentElement;
+      const code = codeBlock.querySelector('pre').textContent;
+      
+      navigator.clipboard.writeText(code).then(() => {
+        button.textContent = '✅ Copiado!';
+        button.style.background = '#10B981';
+        
+        setTimeout(() => {
+          button.textContent = '📋 Copiar';
+          button.style.background = '#06B6D4';
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

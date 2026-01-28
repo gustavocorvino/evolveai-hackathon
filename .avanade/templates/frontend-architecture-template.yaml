@@ -1,0 +1,262 @@
+template:
+  id: frontend-architecture-template-v2
+  name: Frontend Architecture Document
+  version: 2.0
+  output:
+    format: markdown
+    filename: docs/frontend-architecture.md
+    title: "{{project_name}} Frontend Architecture Document"
+
+workflow:
+  mode: interactive
+  steps:
+    - type: elicit
+      agent: wilson
+      fields:
+        - project_name: "Nome do projeto"
+        - project_type: "Tipo de aplicação (SPA, PWA, Mobile App, etc.)"
+        - framework_choice: "Framework principal (React, Angular, Vue.js, React Native)"
+        - ui_library: "Biblioteca de componentes (Material-UI, Ant Design, Chakra UI)"
+        - state_management: "Gerenciamento de estado (Redux, Zustand, Context API)"
+        - styling_approach: "Abordagem de estilo (CSS-in-JS, SCSS, Tailwind)"
+        - build_tool: "Ferramenta de build (Vite, Webpack, Parcel)"
+    
+    - type: analyze
+      agent: wilson
+      process: |
+        Analisar requisitos de performance, acessibilidade e SEO
+        Definir estrutura de componentes e arquitetura modular
+        Mapear fluxos de dados e integração com backend
+    
+    - type: generate
+      agent: wilson
+      template: frontend_architecture_sections
+
+content:
+  sections:
+    overview:
+      title: "## 1. Visão Geral da Arquitetura Frontend"
+      content: |
+        ### 1.1 Contexto do Projeto
+        **Nome do Projeto:** {{project_name}}
+        **Tipo de Aplicação:** {{project_type}}
+        **Framework Principal:** {{framework_choice}}
+        
+        ### 1.2 Objetivos Arquiteturais
+        - **Escalabilidade:** Suporte a crescimento de funcionalidades
+        - **Performance:** Otimização de carregamento e responsividade
+        - **Manutenibilidade:** Código limpo e bem estruturado
+        - **Acessibilidade:** Conformidade com WCAG 2.1 AA
+        - **SEO:** Otimização para motores de busca
+
+    technical_stack:
+      title: "## 2. Stack Tecnológica"
+      content: |
+        ### 2.1 Core Technologies
+        - **Framework:** {{framework_choice}}
+        - **Build Tool:** {{build_tool}}
+        - **Package Manager:** npm/yarn/pnpm
+        - **Type System:** TypeScript
+        
+        ### 2.2 UI/UX Libraries
+        - **Component Library:** {{ui_library}}
+        - **Styling:** {{styling_approach}}
+        - **Icons:** React Icons / Heroicons
+        - **Animation:** Framer Motion / React Spring
+        
+        ### 2.3 State Management
+        - **Global State:** {{state_management}}
+        - **Server State:** React Query / SWR
+        - **Form State:** React Hook Form / Formik
+        
+        ### 2.4 Development Tools
+        - **Linting:** ESLint + Prettier
+        - **Testing:** Jest + React Testing Library / Cypress
+        - **Dev Server:** Vite Dev Server / Webpack Dev Server
+
+    component_architecture:
+      title: "## 3. Arquitetura de Componentes"
+      content: |
+        ### 3.1 Hierarquia de Componentes
+        ```
+        src/
+        ├── components/
+        │   ├── ui/           # Componentes básicos reutilizáveis
+        │   ├── forms/        # Componentes de formulário
+        │   ├── layout/       # Componentes de layout
+        │   └── features/     # Componentes específicos de funcionalidade
+        ├── pages/            # Componentes de página
+        ├── hooks/            # Custom hooks
+        ├── services/         # Serviços de API
+        ├── utils/            # Utilitários
+        ├── types/            # Definições TypeScript
+        └── constants/        # Constantes da aplicação
+        ```
+        
+        ### 3.2 Padrões de Componente
+        - **Atomic Design:** Atoms, Molecules, Organisms, Templates, Pages
+        - **Composition over Inheritance:** Uso de composition patterns
+        - **Props Interface:** Tipagem forte com TypeScript
+        - **Default Props:** Valores padrão para propriedades opcionais
+
+    data_flow:
+      title: "## 4. Fluxo de Dados"
+      content: |
+        ### 4.1 Arquitetura de Estado
+        ```
+        ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+        │   Components    │◄──►│   State Layer    │◄──►│   API Layer     │
+        │                 │    │                  │    │                 │
+        │ • Presentation  │    │ • Global State   │    │ • HTTP Client   │
+        │ • User Events   │    │ • Local State    │    │ • WebSocket     │
+        │ • UI Logic      │    │ • Cache Layer    │    │ • Service Layer │
+        └─────────────────┘    └──────────────────┘    └─────────────────┘
+        ```
+        
+        ### 4.2 Gestão de Estado Global
+        - **{{state_management}}** para estado da aplicação
+        - **React Query** para cache de dados do servidor
+        - **Context API** para temas e configurações
+        
+        ### 4.3 Comunicação com Backend
+        - **REST API:** Axios/Fetch para requisições HTTP
+        - **GraphQL:** Apollo Client (se aplicável)
+        - **Real-time:** WebSocket/Socket.IO para atualizações em tempo real
+
+    routing:
+      title: "## 5. Roteamento e Navegação"
+      content: |
+        ### 5.1 Estrutura de Rotas
+        ```typescript
+        const routes = [
+          { path: '/', component: HomePage, exact: true },
+          { path: '/dashboard', component: DashboardPage, protected: true },
+          { path: '/profile', component: ProfilePage, protected: true },
+          { path: '/login', component: LoginPage, public: true },
+          { path: '/404', component: NotFoundPage }
+        ];
+        ```
+        
+        ### 5.2 Estratégias de Roteamento
+        - **Code Splitting:** Lazy loading de rotas
+        - **Route Guards:** Proteção de rotas autenticadas
+        - **Nested Routes:** Rotas aninhadas para layouts complexos
+        - **Dynamic Routes:** Rotas com parâmetros dinâmicos
+
+    performance:
+      title: "## 6. Otimização de Performance"
+      content: |
+        ### 6.1 Estratégias de Carregamento
+        - **Code Splitting:** Divisão do bundle por rotas
+        - **Lazy Loading:** Carregamento sob demanda
+        - **Tree Shaking:** Remoção de código não utilizado
+        - **Bundle Analysis:** Análise do tamanho dos bundles
+        
+        ### 6.2 Otimizações de Runtime
+        - **React.memo:** Memorização de componentes
+        - **useMemo/useCallback:** Otimização de re-renders
+        - **Virtualization:** Lista virtuais para grandes datasets
+        - **Image Optimization:** Lazy loading e formatos otimizados
+        
+        ### 6.3 Caching Strategy
+        - **HTTP Caching:** Cache-Control headers
+        - **Service Worker:** Cache de recursos estáticos
+        - **React Query:** Cache inteligente de dados
+
+    security:
+      title: "## 7. Segurança Frontend"
+      content: |
+        ### 7.1 Autenticação e Autorização
+        - **JWT Tokens:** Armazenamento seguro de tokens
+        - **Refresh Tokens:** Renovação automática de sessão
+        - **Role-based Access:** Controle baseado em papéis
+        
+        ### 7.2 Proteções Implementadas
+        - **XSS Protection:** Sanitização de inputs
+        - **CSRF Protection:** Tokens CSRF em formulários
+        - **Content Security Policy:** CSP headers
+        - **Input Validation:** Validação robusta de formulários
+
+    accessibility:
+      title: "## 8. Acessibilidade"
+      content: |
+        ### 8.1 Conformidade WCAG 2.1 AA
+        - **Keyboard Navigation:** Navegação completa por teclado
+        - **Screen Reader Support:** Suporte a leitores de tela
+        - **Color Contrast:** Contraste adequado de cores
+        - **Focus Management:** Gestão clara do foco
+        
+        ### 8.2 Implementações Técnicas
+        - **ARIA Labels:** Labels descritivos para elementos
+        - **Semantic HTML:** Uso de elementos semânticos
+        - **Focus Trap:** Captura de foco em modais
+        - **Skip Links:** Links de pular para conteúdo principal
+
+    testing:
+      title: "## 9. Estratégia de Testes"
+      content: |
+        ### 9.1 Pirâmide de Testes
+        ```
+        ┌─────────────────┐  E2E Tests (Cypress)
+        │   Integration   │  Integration Tests (Testing Library)
+        │ ──────────────  │  Unit Tests (Jest)
+        │      Unit       │
+        └─────────────────┘
+        ```
+        
+        ### 9.2 Tipos de Teste
+        - **Unit Tests:** Testes de componentes individuais
+        - **Integration Tests:** Testes de fluxos de usuário
+        - **E2E Tests:** Testes de interface completa
+        - **Visual Regression:** Testes de regressão visual
+        
+        ### 9.3 Cobertura de Testes
+        - **Minimum Coverage:** 80% de cobertura de código
+        - **Critical Paths:** 100% nos fluxos críticos
+        - **Component Testing:** Todos os componentes públicos
+
+    deployment:
+      title: "## 10. Deploy e CI/CD"
+      content: |
+        ### 10.1 Build Pipeline
+        ```yaml
+        stages:
+          - install: npm ci
+          - lint: npm run lint
+          - test: npm run test:coverage
+          - build: npm run build
+          - deploy: Deploy to environment
+        ```
+        
+        ### 10.2 Ambientes
+        - **Development:** Ambiente de desenvolvimento local
+        - **Staging:** Ambiente de homologação
+        - **Production:** Ambiente de produção
+        
+        ### 10.3 Deployment Strategy
+        - **Static Hosting:** Vercel, Netlify, ou S3
+        - **CDN:** CloudFront para distribuição global
+        - **Environment Variables:** Configuração por ambiente
+
+validation:
+  checklist:
+    - "✅ Stack tecnológica definida e aprovada"
+    - "✅ Arquitetura de componentes estruturada"
+    - "✅ Fluxo de dados mapeado"
+    - "✅ Estratégias de performance implementadas"
+    - "✅ Segurança frontend garantida"
+    - "✅ Acessibilidade WCAG 2.1 AA"
+    - "✅ Estratégia de testes definida"
+    - "✅ Pipeline de deploy configurado"
+    - "✅ Documentação completa"
+    - "✅ Aprovação dos stakeholders"
+
+metadata:
+  agents:
+    primary: wilson
+    reviewers: [joao, maria]
+  approvers: [project_manager, technical_lead]
+  version_control:
+    repository: "{{project_repository}}"
+    branch: feature/frontend-architecture
+  tags: [frontend, architecture, react, typescript, performance]

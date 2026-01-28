@@ -1,0 +1,407 @@
+template:
+  id: test-strategy-template-v2
+  name: Test Strategy Document
+  version: 2.0
+  output:
+    format: markdown
+    filename: docs/test-strategy.md
+    title: "{{project_name}} Test Strategy"
+
+workflow:
+  mode: interactive
+  steps:
+    - type: elicit
+      agent: tiago
+      fields:
+        - project_name: "Nome do projeto"
+        - project_type: "Tipo de projeto (Web, Mobile, API, etc.)"
+        - technology_stack: "Stack tecnológica principal"
+        - testing_scope: "Escopo dos testes (Unit, Integration, E2E)"
+        - quality_requirements: "Requisitos de qualidade específicos"
+        - timeline: "Timeline do projeto"
+        - team_size: "Tamanho da equipe de desenvolvimento"
+    
+    - type: analyze
+      agent: tiago
+      process: |
+        Analisar complexidade do projeto e definir estratégia de testes
+        Identificar riscos de qualidade e pontos críticos
+        Mapear ferramentas e frameworks de teste necessários
+    
+    - type: generate
+      agent: tiago
+      template: test_strategy_sections
+
+content:
+  sections:
+    overview:
+      title: "## 1. Visão Geral da Estratégia de Testes"
+      content: |
+        ### 1.1 Contexto do Projeto
+        **Nome do Projeto:** {{project_name}}
+        **Tipo de Projeto:** {{project_type}}
+        **Stack Tecnológica:** {{technology_stack}}
+        **Timeline:** {{timeline}}
+        
+        ### 1.2 Objetivos da Estratégia
+        - **Qualidade:** Garantir alta qualidade do software entregue
+        - **Cobertura:** Cobertura abrangente de funcionalidades
+        - **Automação:** Maximizar automação de testes
+        - **Eficiência:** Otimizar tempo de execução de testes
+        - **Feedback:** Feedback rápido para o time de desenvolvimento
+
+    scope:
+      title: "## 2. Escopo dos Testes"
+      content: |
+        ### 2.1 Escopo Definido
+        {{testing_scope}}
+        
+        ### 2.2 Tipos de Teste Incluídos
+        - **Unit Tests:** Testes de componentes individuais
+        - **Integration Tests:** Testes de integração entre componentes
+        - **System Tests:** Testes do sistema completo
+        - **Acceptance Tests:** Testes de aceitação do usuário
+        - **Performance Tests:** Testes de performance e carga
+        - **Security Tests:** Testes de segurança
+        
+        ### 2.3 Critérios de Entrada e Saída
+        
+        **Critérios de Entrada:**
+        - Código fonte disponível e compilando
+        - Ambiente de testes configurado
+        - Test data preparado
+        - Documentação de requisitos atualizada
+        
+        **Critérios de Saída:**
+        - Todos os testes críticos passando
+        - Cobertura de código > 80%
+        - Bugs críticos e altos resolvidos
+        - Documentação de testes atualizada
+
+    test_pyramid:
+      title: "## 3. Pirâmide de Testes"
+      content: |
+        ### 3.1 Estrutura da Pirâmide
+        ```
+        ┌─────────────────┐ ← E2E Tests (10%)
+        │   Integration   │ ← Integration Tests (20%)
+        │ ──────────────  │ ← Unit Tests (70%)
+        │      Unit       │
+        └─────────────────┘
+        ```
+        
+        ### 3.2 Unit Tests (70%)
+        - **Framework:** Jest/xUnit/JUnit
+        - **Coverage Target:** 90%+ para business logic
+        - **Execution Time:** < 5 minutos para toda suite
+        - **Responsabilidade:** Desenvolvedores
+        
+        **Diretrizes:**
+        - Testes isolados e independentes
+        - Mocks para dependências externas
+        - Testes de edge cases e validações
+        - Fast feedback loop
+        
+        ### 3.3 Integration Tests (20%)
+        - **Framework:** TestContainers, Postman/Newman
+        - **Coverage:** APIs, Database, External Services
+        - **Execution Time:** < 15 minutos
+        - **Responsabilidade:** QA Engineers
+        
+        **Diretrizes:**
+        - Testes de contratos de API
+        - Testes de integração com banco de dados
+        - Testes de messaging/queues
+        - Validação de fluxos de dados
+        
+        ### 3.4 E2E Tests (10%)
+        - **Framework:** Cypress, Playwright, Selenium
+        - **Coverage:** User journeys críticos
+        - **Execution Time:** < 30 minutos
+        - **Responsabilidade:** QA Team
+        
+        **Diretrizes:**
+        - Foco em happy paths críticos
+        - Simulação de usuários reais
+        - Cross-browser testing
+        - Performance monitoring
+
+    automation_strategy:
+      title: "## 4. Estratégia de Automação"
+      content: |
+        ### 4.1 Ferramentas de Automação
+        
+        **Frontend Testing:**
+        - **Unit:** Jest + React Testing Library
+        - **E2E:** Cypress/Playwright
+        - **Visual Regression:** Percy/Chromatic
+        
+        **Backend Testing:**
+        - **Unit:** xUnit/.NET / Jest/Node.js / JUnit/Java
+        - **API:** Postman/Newman, RestAssured
+        - **Database:** DbUnit, TestContainers
+        
+        **Performance Testing:**
+        - **Load Testing:** JMeter, k6
+        - **Stress Testing:** Artillery
+        - **Monitoring:** Application Insights, DataDog
+        
+        ### 4.2 Automação de Pipeline
+        ```yaml
+        stages:
+          - name: Unit Tests
+            trigger: commit
+            timeout: 5min
+            
+          - name: Integration Tests  
+            trigger: PR
+            timeout: 15min
+            
+          - name: E2E Tests
+            trigger: release
+            timeout: 30min
+        ```
+        
+        ### 4.3 Critérios de Automação
+        - **High Value:** Testes de funcionalidades críticas
+        - **High Frequency:** Testes executados frequentemente
+        - **High Risk:** Testes de áreas propensas a bugs
+        - **Regression:** Testes de regressão essenciais
+
+    test_environments:
+      title: "## 5. Ambientes de Teste"
+      content: |
+        ### 5.1 Estratégia de Ambientes
+        
+        **Development Environment:**
+        - **Propósito:** Desenvolvimento e testes unitários
+        - **Data:** Synthetic test data
+        - **Refresh:** Continuous deployment
+        - **Access:** Development team
+        
+        **Testing Environment:**
+        - **Propósito:** Integration e system testing
+        - **Data:** Anonymized production-like data
+        - **Refresh:** Daily deployment
+        - **Access:** QA team + Developers
+        
+        **Staging Environment:**
+        - **Propósito:** UAT e performance testing
+        - **Data:** Production-like data (anonymized)
+        - **Refresh:** Release candidates
+        - **Access:** Business users + QA
+        
+        **Production Environment:**
+        - **Propósito:** Smoke tests e monitoring
+        - **Data:** Real production data
+        - **Refresh:** Approved releases only
+        - **Access:** Monitoring only
+        
+        ### 5.2 Data Management
+        - **Test Data Creation:** Automated synthetic data generation
+        - **Data Refresh:** Automated refresh processes
+        - **Data Privacy:** GDPR/LGPD compliant anonymization
+        - **Data Isolation:** Isolated test data per environment
+
+    performance_testing:
+      title: "## 6. Testes de Performance"
+      content: |
+        ### 6.1 Objetivos de Performance
+        - **Response Time:** < 2 segundos para 95% das requests
+        - **Throughput:** 1000+ concurrent users
+        - **Availability:** 99.9% uptime
+        - **Scalability:** Linear scaling up to 10x load
+        
+        ### 6.2 Tipos de Teste de Performance
+        
+        **Load Testing:**
+        - **Objetivo:** Verificar performance sob carga esperada
+        - **Tools:** JMeter, k6
+        - **Frequency:** Weekly
+        - **Duration:** 30 minutos
+        
+        **Stress Testing:**
+        - **Objetivo:** Identificar ponto de quebra
+        - **Tools:** Artillery, JMeter
+        - **Frequency:** Before release
+        - **Duration:** 60 minutos
+        
+        **Spike Testing:**
+        - **Objetivo:** Comportamento com picos de tráfego
+        - **Tools:** k6, JMeter
+        - **Frequency:** Before major releases
+        - **Duration:** 15 minutos
+        
+        **Volume Testing:**
+        - **Objetivo:** Performance com grandes volumes de dados
+        - **Tools:** Custom scripts
+        - **Frequency:** Monthly
+        - **Duration:** 2 horas
+        
+        ### 6.3 Monitoring e Alerting
+        - **APM:** Application Performance Monitoring
+        - **Infrastructure:** Server metrics monitoring
+        - **Real User Monitoring:** RUM implementation
+        - **Synthetic Monitoring:** Proactive monitoring
+
+    security_testing:
+      title: "## 7. Testes de Segurança"
+      content: |
+        ### 7.1 Categorias de Teste de Segurança
+        
+        **Authentication & Authorization:**
+        - Login/logout functionality
+        - Role-based access control
+        - Session management
+        - Multi-factor authentication
+        
+        **Input Validation:**
+        - SQL injection prevention
+        - XSS prevention  
+        - CSRF protection
+        - Input sanitization
+        
+        **Data Protection:**
+        - Encryption at rest
+        - Encryption in transit
+        - PII data handling
+        - GDPR compliance
+        
+        ### 7.2 Ferramentas de Security Testing
+        - **Static Analysis:** SonarQube, CodeQL
+        - **Dynamic Analysis:** OWASP ZAP, Burp Suite
+        - **Dependency Scanning:** Snyk, WhiteSource
+        - **Infrastructure:** Terraform security scans
+        
+        ### 7.3 Security Testing Schedule
+        - **Daily:** Automated security scans in pipeline
+        - **Weekly:** Dependency vulnerability checks
+        - **Monthly:** Manual penetration testing
+        - **Quarterly:** Third-party security audit
+
+    quality_metrics:
+      title: "## 8. Métricas de Qualidade"
+      content: |
+        ### 8.1 Métricas de Cobertura
+        - **Code Coverage:** > 80% para unit tests
+        - **Branch Coverage:** > 75% para logic crítica  
+        - **Functional Coverage:** 100% para user stories
+        - **API Coverage:** 100% para endpoints públicos
+        
+        ### 8.2 Métricas de Performance
+        - **Test Execution Time:** Trend tracking
+        - **Build Time:** < 10 minutos target
+        - **Deployment Time:** < 5 minutos target
+        - **Time to Feedback:** < 15 minutos
+        
+        ### 8.3 Métricas de Qualidade
+        - **Defect Density:** < 1 bug per 1000 LOC
+        - **Defect Escape Rate:** < 5% to production
+        - **Test Automation Ratio:** > 80%
+        - **Mean Time to Resolution:** < 24 horas
+        
+        ### 8.4 Dashboards e Reportes
+        ```
+        Quality Dashboard:
+        ├── Test Coverage Trends
+        ├── Build Success Rate
+        ├── Deployment Frequency
+        ├── Lead Time for Changes
+        └── Mean Time to Recovery
+        ```
+
+    risk_management:
+      title: "## 9. Gestão de Riscos de Qualidade"
+      content: |
+        ### 9.1 Riscos Identificados
+        
+        **High Risk:**
+        - **Complex Integration Points:** Multiple external APIs
+        - **Performance Critical Paths:** High-volume transactions
+        - **Security Sensitive Areas:** Authentication, payments
+        
+        **Medium Risk:**
+        - **New Technology:** Learning curve for team
+        - **Third-party Dependencies:** External service reliability
+        - **Data Migration:** Legacy data quality issues
+        
+        **Low Risk:**
+        - **UI Components:** Well-established patterns
+        - **CRUD Operations:** Standard implementations
+        - **Configuration:** Environment-specific configs
+        
+        ### 9.2 Mitigation Strategies
+        - **High Risk Areas:** 100% test coverage + manual testing
+        - **Complex Integrations:** Contract testing + mocks
+        - **Performance Critical:** Load testing + monitoring
+        - **Security Areas:** Dedicated security testing
+        
+        ### 9.3 Contingency Plans
+        - **Test Environment Issues:** Backup environments
+        - **Test Data Problems:** Synthetic data generation
+        - **Tool Failures:** Alternative tooling strategies
+        - **Resource Constraints:** Prioritization framework
+
+    governance:
+      title: "## 10. Governança de Testes"
+      content: |
+        ### 10.1 Papéis e Responsabilidades
+        
+        **QA Lead (Tiago):**
+        - Definir estratégia de testes
+        - Revisar planos de teste
+        - Aprovar releases
+        - Coordenar equipe de QA
+        
+        **QA Engineers:**
+        - Criar e executar test cases
+        - Manter automação de testes
+        - Reportar bugs e issues
+        - Executar testes manuais
+        
+        **Developers:**
+        - Criar unit tests
+        - Suportar integration testing
+        - Fix bugs identificados
+        - Code review de testes
+        
+        **DevOps:**
+        - Manter pipeline de testes
+        - Configurar ambientes
+        - Monitoring e alerting
+        - Infrastructure as Code
+        
+        ### 10.2 Processos de Aprovação
+        - **Test Plans:** Aprovação do QA Lead
+        - **Test Cases:** Review em pares
+        - **Bug Reports:** Triagem com Product Owner
+        - **Release:** Sign-off baseado em exit criteria
+        
+        ### 10.3 Documentação e Rastreabilidade
+        - **Test Cases:** Linkados com user stories
+        - **Test Results:** Armazenados em test management tool
+        - **Defects:** Rastreados até resolução
+        - **Coverage Reports:** Publicados em dashboards
+
+validation:
+  checklist:
+    - "✅ Escopo de testes definido e aprovado"
+    - "✅ Pirâmide de testes estruturada"
+    - "✅ Estratégia de automação estabelecida"
+    - "✅ Ambientes de teste configurados"
+    - "✅ Testes de performance planejados"
+    - "✅ Segurança testing incluído"
+    - "✅ Métricas de qualidade definidas"
+    - "✅ Riscos identificados e mitigados"
+    - "✅ Governança estabelecida"
+    - "✅ Ferramentas selecionadas e configuradas"
+
+metadata:
+  agents:
+    primary: tiago
+    reviewers: [wilson, joao]
+  approvers: [qa_manager, technical_lead]
+  version_control:
+    repository: "{{project_repository}}"
+    branch: feature/test-strategy
+  tags: [testing, qa, automation, quality, strategy]

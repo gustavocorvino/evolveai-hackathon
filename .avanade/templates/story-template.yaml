@@ -1,0 +1,362 @@
+template:
+  id: story-avanade-template
+  name: Template de História do Usuário Avanade
+  version: 1.0
+  output:
+    format: markdown
+    filename: stories/{{story_id}}-{{story_title_slug}}.md
+    title: "{{story_title}} - História do Usuário"
+
+workflow:
+  mode: interactive
+  elicitation: guided-questions
+  collaboration: true
+
+agents:
+  responsible: paula-po
+  collaborators: [sofia-ux, tiago-dev, carla-qa]
+  reviewers: [joao-pm]
+
+sections:
+  - id: identificacao
+    title: Identificação da História
+    instruction: |
+      Defina os identificadores únicos e básicos da história para rastreabilidade e organização no backlog.
+    sections:
+      - id: cabecalho
+        title: Informações Básicas
+        type: structured
+        instruction: Dados essenciais para identificação e rastreamento da história
+        fields:
+          - field: story_id
+            title: ID da História
+            type: text
+            required: true
+            instruction: Identificador único (ex: US001, FEAT-123)
+          - field: epic_id
+            title: Epic/Feature
+            type: text
+            instruction: ID do Epic ou Feature ao qual esta história pertence
+          - field: titulo
+            title: Título
+            type: text
+            required: true
+            instruction: Título conciso e descritivo da história
+          - field: autor
+            title: Autor
+            type: text
+            required: true
+            instruction: Quem criou esta história
+          - field: data_criacao
+            title: Data de Criação
+            type: date
+            required: true
+          - field: prioridade
+            title: Prioridade
+            type: select
+            options: [Crítica, Alta, Média, Baixa]
+            required: true
+
+  - id: narrativa-usuario
+    title: Narrativa do Usuário
+    instruction: |
+      Descreva a história seguindo o formato padrão "Como [tipo de usuário], eu quero [objetivo/funcionalidade], para que [benefício/valor]".
+      Foque no valor de negócio que será entregue ao usuário.
+    sections:
+      - id: formato-padrao
+        title: História no Formato Padrão
+        type: structured
+        instruction: Use o template "Como... eu quero... para que..."
+        fields:
+          - field: como
+            title: Como (tipo de usuário)
+            type: text
+            required: true
+            instruction: Ex: "Como gerente de vendas"
+            elicitation:
+              questions:
+                - "Quem é o usuário principal desta funcionalidade?"
+                - "Que papel ou função esta pessoa exerce?"
+                - "Este usuário tem alguma característica especial (experiência, limitações)?"
+          
+          - field: quero
+            title: Eu quero (objetivo/funcionalidade)
+            type: text
+            required: true
+            instruction: Ex: "visualizar um dashboard de performance da equipe"
+            elicitation:
+              questions:
+                - "Qual funcionalidade específica o usuário precisa?"
+                - "O que exatamente o usuário quer fazer no sistema?"
+                - "Há variações desta funcionalidade para diferentes contextos?"
+          
+          - field: para_que
+            title: Para que (benefício/valor)
+            type: text
+            required: true
+            instruction: Ex: "possa identificar oportunidades de melhoria"
+            elicitation:
+              questions:
+                - "Que valor de negócio esta funcionalidade traz?"
+                - "Como esta funcionalidade melhora o trabalho do usuário?"
+                - "Que problema específico está sendo resolvido?"
+
+      - id: contexto-adicional
+        title: Contexto Adicional
+        type: paragraphs
+        instruction: |
+          Forneça contexto adicional sobre a necessidade, motivação ou cenário que originou esta história
+        elicitation:
+          questions:
+            - "Qual é o contexto de negócio que motiva esta necessidade?"
+            - "Há algum evento ou situação específica que gerou esta demanda?"
+            - "Como esta história se relaciona com outras funcionalidades?"
+
+  - id: criterios-aceitacao
+    title: Critérios de Aceitação
+    instruction: |
+      Defina condições específicas e testáveis que devem ser atendidas para que a história seja considerada completa.
+      Use linguagem clara e mensurável. Evite ambiguidades.
+    sections:
+      - id: criterios-funcionais
+        title: Critérios Funcionais
+        type: structured-list
+        instruction: |
+          Liste os critérios relacionados ao comportamento funcional do sistema
+        elicitation:
+          questions:
+            - "Quais são os cenários de sucesso principais?"
+            - "Que dados de entrada são necessários?"
+            - "Qual deve ser o comportamento em cada situação?"
+            - "Que informações devem ser exibidas ao usuário?"
+        fields:
+          - field: criterio
+            title: Critério
+            type: text
+            required: true
+          - field: cenario
+            title: Cenário/Contexto
+            type: text
+          - field: condicao
+            title: Condição (Dado que...)
+            type: text
+          - field: acao
+            title: Ação (Quando...)
+            type: text
+          - field: resultado
+            title: Resultado Esperado (Então...)
+            type: text
+            required: true
+
+      - id: criterios-ux
+        title: Critérios de UX/UI
+        type: bullet-list
+        instruction: |
+          Defina critérios relacionados à experiência do usuário e interface
+        elicitation:
+          questions:
+            - "Como a interface deve se comportar?"
+            - "Quais elementos visuais são importantes?"
+            - "Há padrões de design que devem ser seguidos?"
+            - "Como deve ser a navegação e fluxo da tela?"
+
+      - id: criterios-performance
+        title: Critérios de Performance
+        type: bullet-list
+        instruction: |
+          Especifique requisitos de performance quando relevantes
+        elicitation:
+          questions:
+            - "Há requisitos específicos de tempo de resposta?"
+            - "Quantos usuários simultâneos devem ser suportados?"
+            - "Há limitações de volume de dados?"
+
+  - id: mockups-wireframes
+    title: Mockups e Wireframes
+    instruction: |
+      Inclua referências visuais que ajudem a esclarecer a funcionalidade esperada.
+    sections:
+      - id: referencias-visuais
+        title: Referências Visuais
+        type: structured
+        instruction: Links ou referências para mockups, wireframes ou protótipos
+        fields:
+          - field: mockups
+            title: Mockups
+            type: text
+            instruction: Links para mockups de alta fidelidade
+          - field: wireframes
+            title: Wireframes
+            type: text
+            instruction: Links para wireframes ou protótipos
+          - field: fluxos
+            title: Fluxos de Usuário
+            type: text
+            instruction: Diagramas de fluxo de navegação
+
+  - id: dependencias-bloqueios
+    title: Dependências e Bloqueios
+    instruction: |
+      Identifique outras histórias, sistemas ou recursos necessários antes desta história poder ser implementada.
+    sections:
+      - id: dependencias-tecnicas
+        title: Dependências Técnicas
+        type: table
+        headers: [Dependência, Tipo, Status, Responsável, Data Prevista]
+        instruction: |
+          APIs, serviços, componentes ou infraestrutura necessários
+        elicitation:
+          questions:
+            - "Que outras histórias devem ser completadas primeiro?"
+            - "Há dependências de sistemas externos?"
+            - "Que componentes técnicos precisam estar prontos?"
+
+      - id: dependencias-negocio
+        title: Dependências de Negócio
+        type: table
+        headers: [Dependência, Descrição, Stakeholder, Status]
+        instruction: |
+          Aprovações, definições de negócio ou processos necessários
+        elicitation:
+          questions:
+            - "Há aprovações pendentes de stakeholders?"
+            - "Existem definições de negócio que precisam ser finalizadas?"
+            - "Há processos organizacionais que impactam esta história?"
+
+  - id: estimativa-planejamento
+    title: Estimativa e Planejamento
+    instruction: |
+      Informações para planejamento e priorização no backlog.
+    sections:
+      - id: estimativa
+        title: Estimativa de Esforço
+        type: structured
+        fields:
+          - field: story_points
+            title: Story Points
+            type: number
+            instruction: Estimativa relativa de complexidade
+          - field: horas_dev
+            title: Horas de Desenvolvimento
+            type: number
+            instruction: Estimativa de horas (se aplicável)
+          - field: complexidade
+            title: Complexidade
+            type: select
+            options: [Baixa, Média, Alta, Muito Alta]
+
+      - id: valor-negocio
+        title: Valor de Negócio
+        type: structured
+        fields:
+          - field: valor_score
+            title: Score de Valor
+            type: number
+            instruction: Score de 1-10 do valor de negócio
+          - field: impacto_usuarios
+            title: Impacto nos Usuários
+            type: select
+            options: [Baixo, Médio, Alto, Crítico]
+          - field: urgencia
+            title: Urgência
+            type: select
+            options: [Pode esperar, Normal, Urgente, Crítica]
+
+  - id: casos-teste
+    title: Casos de Teste
+    instruction: |
+      Esboce os principais cenários de teste baseados nos critérios de aceitação.
+    sections:
+      - id: cenarios-teste
+        title: Cenários de Teste
+        type: structured-list
+        instruction: |
+          Liste os principais casos de teste que validarão a implementação
+        fields:
+          - field: cenario
+            title: Cenário de Teste
+            type: text
+            required: true
+          - field: pre_condicoes
+            title: Pré-condições
+            type: text
+          - field: passos
+            title: Passos do Teste
+            type: text
+            required: true
+          - field: resultado_esperado
+            title: Resultado Esperado
+            type: text
+            required: true
+          - field: prioridade
+            title: Prioridade
+            type: select
+            options: [Alta, Média, Baixa]
+
+  - id: notas-implementacao
+    title: Notas de Implementação
+    instruction: |
+      Informações técnicas ou de negócio relevantes para a equipe de desenvolvimento.
+    sections:
+      - id: consideracoes-tecnicas
+        title: Considerações Técnicas
+        type: bullet-list
+        instruction: |
+          Aspectos técnicos importantes para a implementação
+        elicitation:
+          questions:
+            - "Há padrões arquiteturais que devem ser seguidos?"
+            - "Existem bibliotecas ou frameworks específicos a usar?"
+            - "Há considerações de performance ou segurança?"
+
+      - id: regras-negocio
+        title: Regras de Negócio
+        type: bullet-list
+        instruction: |
+          Regras específicas do domínio que devem ser implementadas
+        elicitation:
+          questions:
+            - "Quais são as regras de validação de dados?"
+            - "Há cálculos ou algoritmos específicos?"
+            - "Existem restrições ou limitações do negócio?"
+
+  - id: historico-mudancas
+    title: Histórico de Mudanças
+    instruction: |
+      Registro de alterações feitas na história durante seu ciclo de vida.
+    sections:
+      - id: log_mudancas
+        title: Log de Mudanças
+        type: table
+        headers: [Data, Autor, Tipo de Mudança, Descrição, Motivo]
+        instruction: |
+          Registre todas as mudanças significativas feitas na história
+
+validation:
+  required_sections: [identificacao, narrativa-usuario, criterios-aceitacao]
+  quality_gates:
+    - title: "Clareza da Narrativa"
+      check: "A história segue o formato 'Como...eu quero...para que...' e é clara?"
+    - title: "Testabilidade"
+      check: "Os critérios de aceitação são específicos e testáveis?"
+    - title: "Valor de Negócio"
+      check: "O valor de negócio da história está claro e justificado?"
+    - title: "Estimabilidade"
+      check: "A história tem tamanho adequado para ser estimada e implementada em uma sprint?"
+
+agents_permissions:
+  paula-po:
+    edit: all_sections
+    approve: [narrativa-usuario, criterios-aceitacao, valor-negocio]
+  sofia-ux:
+    edit: [criterios-ux, mockups-wireframes, consideracoes-tecnicas]
+    review: [narrativa-usuario, criterios-aceitacao]
+  tiago-dev:
+    edit: [notas-implementacao, dependencias-tecnicas, estimativa]
+    review: [criterios-funcionais, casos-teste]
+  carla-qa:
+    edit: [casos-teste, criterios-aceitacao]
+    review: [criterios-funcionais, criterios-performance]
+  joao-pm:
+    edit: [dependencias-negocio, valor-negocio, historico-mudancas]
+    approve: all_sections

@@ -1,0 +1,623 @@
+template:
+  id: user-guide-template-v2
+  name: User Guide Document
+  version: 2.0
+  output:
+    format: markdown
+    filename: docs/user-guide.md
+    title: "{{project_name}} User Guide"
+
+workflow:
+  mode: interactive
+  steps:
+    - type: elicit
+      agent: carla
+      fields:
+        - project_name: "Nome do projeto"
+        - target_audience: "Público-alvo (End Users, Admins, Developers)"
+        - application_type: "Tipo de aplicação (Web, Mobile, Desktop)"
+        - key_features: "Principais funcionalidades"
+        - user_roles: "Papéis dos usuários"
+        - complexity_level: "Nível de complexidade (Básico, Intermediário, Avançado)"
+    
+    - type: analyze
+      agent: carla
+      process: |
+        Analisar jornadas de usuário e pontos de complexidade
+        Identificar necessidades de treinamento por papel
+        Mapear funcionalidades por prioridade e frequência de uso
+    
+    - type: design
+      agent: carla
+      process: |
+        Estruturar guide baseado em user journeys
+        Criar fluxos visuais para processos complexos
+        Definir estratégia de documentação multimodal
+    
+    - type: generate
+      agent: carla
+      template: user_guide_sections
+
+content:
+  sections:
+    overview:
+      title: "## 1. Visão Geral do Sistema"
+      content: |
+        ### 1.1 Bem-vindo ao {{project_name}}
+        Este guia foi criado para ajudá-lo a utilizar o {{project_name}} de forma eficiente e produtiva. 
+        
+        **Público-alvo:** {{target_audience}}
+        **Tipo de Sistema:** {{application_type}}
+        **Nível de Complexidade:** {{complexity_level}}
+        
+        ### 1.2 O que é o {{project_name}}?
+        O {{project_name}} é uma plataforma que permite [descrição principal da funcionalidade]. 
+        Com este sistema, você poderá:
+        
+        {{key_features}}
+        
+        ### 1.3 Como usar este guia
+        - **📱 Iniciantes:** Comece com a seção "Primeiros Passos"
+        - **⚡ Usuários Experientes:** Consulte a "Referência Rápida"
+        - **🔧 Administradores:** Foque na seção "Administração"
+        - **❓ Problemas:** Consulte "Solução de Problemas"
+        
+        ### 1.4 Convenções deste Guia
+        - 🎯 **Dicas importantes** 
+        - ⚠️ **Avisos e cuidados**
+        - ✅ **Listas de verificação**
+        - 📝 **Exemplos práticos**
+
+    getting_started:
+      title: "## 2. Primeiros Passos"
+      content: |
+        ### 2.1 Requisitos do Sistema
+        
+        **Navegadores Suportados:**
+        - Chrome (versão 90+)
+        - Firefox (versão 85+)
+        - Safari (versão 14+)
+        - Edge (versão 90+)
+        
+        **Dispositivos:**
+        - Desktop: Windows 10+, macOS 10.15+
+        - Mobile: iOS 13+, Android 8+
+        - Tablet: iPad OS 13+, Android tablets
+        
+        **Conexão de Internet:**
+        - Mínimo: 5 Mbps
+        - Recomendado: 25 Mbps para melhor experiência
+        
+        ### 2.2 Primeiro Acesso
+        
+        #### Passo 1: Acessar o Sistema
+        1. Abra seu navegador
+        2. Digite: `https://{{project_name}}.com`
+        3. Pressione Enter
+        
+        #### Passo 2: Fazer Login
+        ```
+        ┌─────────────────────────┐
+        │     LOGIN SCREEN        │
+        │                         │
+        │ Email: [____________]   │
+        │ Senha: [____________]   │
+        │                         │
+        │ [ ] Lembrar de mim      │
+        │                         │
+        │     [ENTRAR] [AJUDA]    │
+        └─────────────────────────┘
+        ```
+        
+        🎯 **Dica:** Use o botão "Esqueci minha senha" se necessário
+        
+        #### Passo 3: Configuração Inicial
+        1. Complete seu perfil
+        2. Configure suas preferências
+        3. Aceite os termos de uso
+        4. Faça o tour guiado (recomendado)
+        
+        ### 2.3 Interface Principal
+        ```
+        ┌─────────────────────────────────────────────────┐
+        │ Header: Logo | Menu | Notificações | Perfil     │
+        ├─────────────────────────────────────────────────┤
+        │ Sidebar │              Main Content             │
+        │         │                                       │
+        │ • Home  │  Dashboard com widgets principais     │
+        │ • Menu1 │                                       │
+        │ • Menu2 │  ┌───────┐ ┌───────┐ ┌───────┐      │
+        │ • Menu3 │  │Widget1│ │Widget2│ │Widget3│      │
+        │         │  └───────┘ └───────┘ └───────┘      │
+        └─────────────────────────────────────────────────┘
+        ```
+
+    user_roles:
+      title: "## 3. Papéis e Permissões"
+      content: |
+        ### 3.1 Tipos de Usuário
+        {{user_roles}}
+        
+        ### 3.2 Matriz de Permissões
+        
+        | Funcionalidade | Usuário | Supervisor | Admin |
+        |---------------|---------|------------|-------|
+        | Visualizar Dashboard | ✅ | ✅ | ✅ |
+        | Criar Registros | ✅ | ✅ | ✅ |
+        | Editar Próprios | ✅ | ✅ | ✅ |
+        | Editar Outros | ❌ | ✅ | ✅ |
+        | Deletar Registros | ❌ | ✅ | ✅ |
+        | Relatórios Avançados | ❌ | ✅ | ✅ |
+        | Configurações Sistema | ❌ | ❌ | ✅ |
+        | Gerenciar Usuários | ❌ | ❌ | ✅ |
+        
+        ### 3.3 Como Verificar suas Permissões
+        1. Clique no seu perfil (canto superior direito)
+        2. Selecione "Meu Perfil"
+        3. Na aba "Permissões" veja seus acessos
+        
+        ⚠️ **Aviso:** Se não conseguir acessar uma funcionalidade, 
+        contacte seu supervisor ou administrador
+
+    main_features:
+      title: "## 4. Funcionalidades Principais"
+      content: |
+        ### 4.1 Dashboard
+        
+        **O que é:** Página inicial com visão geral das informações importantes
+        
+        **Como acessar:** 
+        - Automático após login
+        - Menu lateral > "Dashboard"
+        - Ícone de casa no header
+        
+        **Widgets Disponíveis:**
+        - 📊 **Métricas:** KPIs principais do seu trabalho
+        - 📅 **Agenda:** Próximos compromissos e tarefas
+        - 📬 **Notificações:** Alertas e mensagens importantes
+        - 📈 **Relatórios:** Gráficos de performance
+        
+        **Personalização:**
+        1. Clique em "⚙️ Configurar Dashboard"
+        2. Arraste widgets para reorganizar
+        3. Use "+" para adicionar novos widgets
+        4. Use "×" para remover widgets
+        5. Clique "Salvar" para confirmar
+        
+        ### 4.2 Gestão de Dados
+        
+        **Criar Novo Registro:**
+        ```
+        1. Menu > [Categoria] > "Novo"
+        2. Preencha campos obrigatórios (*)
+        3. Adicione informações opcionais
+        4. Clique "Salvar" ou "Salvar e Continuar"
+        ```
+        
+        **Editar Registro:**
+        ```
+        1. Localize o item na lista
+        2. Clique no ícone "✏️ Editar"
+        3. Modifique as informações
+        4. Clique "Atualizar"
+        ```
+        
+        **Buscar Informações:**
+        - **Busca Rápida:** Campo no topo da tela
+        - **Filtros Avançados:** Botão "🔍 Filtros"
+        - **Ordenação:** Clique nos cabeçalhos das colunas
+        
+        ### 4.3 Relatórios
+        
+        **Tipos de Relatório:**
+        - 📊 **Dashboard Reports:** Relatórios visuais
+        - 📋 **Detailed Reports:** Relatórios detalhados
+        - 📈 **Analytics:** Análises avançadas
+        - 📄 **Export Reports:** Relatórios para exportar
+        
+        **Como Gerar:**
+        1. Menu > "Relatórios"
+        2. Escolha o tipo desejado
+        3. Configure filtros e período
+        4. Clique "Gerar Relatório"
+        5. Aguarde processamento
+        6. Visualize ou exporte resultado
+
+    step_by_step:
+      title: "## 5. Guias Passo-a-Passo"
+      content: |
+        ### 5.1 Fluxo Completo: Criar Projeto
+        
+        #### Pré-requisitos
+        ✅ Login efetuado  
+        ✅ Permissões de criação  
+        ✅ Informações básicas do projeto  
+        
+        #### Passo-a-passo
+        
+        **Etapa 1: Iniciar Criação**
+        ```
+        1. Clique em "Projetos" no menu lateral
+        2. Clique no botão "+ Novo Projeto"
+        3. Escolha o template ou "Projeto em Branco"
+        ```
+        
+        **Etapa 2: Informações Básicas**
+        ```
+        📝 Campos Obrigatórios:
+        • Nome do Projeto *
+        • Descrição *
+        • Data de Início *
+        • Responsável *
+        
+        📝 Campos Opcionais:
+        • Tags
+        • Orçamento
+        • Observações
+        ```
+        
+        **Etapa 3: Configurações**
+        ```
+        ⚙️ Definir:
+        • Visibilidade (Público/Privado)
+        • Permissões da equipe
+        • Notificações
+        • Integração com outras ferramentas
+        ```
+        
+        **Etapa 4: Revisão e Criação**
+        ```
+        1. Revise todas as informações
+        2. Clique "Criar Projeto"
+        3. Aguarde confirmação
+        4. Acesse o projeto criado
+        ```
+        
+        ### 5.2 Fluxo Completo: Gerar Relatório Mensal
+        
+        #### Preparação
+        ✅ Definir período de análise  
+        ✅ Identificar métricas necessárias  
+        ✅ Verificar permissões de acesso  
+        
+        #### Execução
+        ```
+        1. Menu > "Relatórios" > "Relatório Mensal"
+        2. Filtros:
+           • Período: [Mês/Ano]
+           • Departamento: [Seleção]
+           • Métricas: [Checkboxes]
+        3. Clique "Prévia" para validar
+        4. Clique "Gerar Relatório Final"
+        5. Aguarde processamento (pode demorar 2-3 min)
+        6. Download automático ou link por email
+        ```
+
+    advanced_features:
+      title: "## 6. Funcionalidades Avançadas"
+      content: |
+        ### 6.1 Automação de Processos
+        
+        **Configurar Workflows:**
+        ```
+        1. Menu > "Configurações" > "Workflows"
+        2. Clique "+ Nova Automação"
+        3. Escolha trigger (evento que inicia)
+        4. Defina ações (o que acontece)
+        5. Configure condições (quando acontece)
+        6. Teste o workflow
+        7. Ative a automação
+        ```
+        
+        **Exemplos de Automação:**
+        - **Email Automático:** Notificar quando tarefa é concluída
+        - **Aprovação:** Enviar para aprovação quando valor > X
+        - **Escalação:** Escalar para supervisor após Y dias
+        
+        ### 6.2 Integração com APIs
+        
+        **Conectar Sistemas Externos:**
+        ```
+        1. Menu > "Integrações" > "Nova Conexão"
+        2. Escolha o sistema (CRM, ERP, etc.)
+        3. Configure credenciais de acesso
+        4. Mapeie campos de sincronização
+        5. Configure frequência de sync
+        6. Teste a conexão
+        7. Ative a integração
+        ```
+        
+        ### 6.3 Dashboards Personalizados
+        
+        **Criar Dashboard Customizado:**
+        ```
+        1. Menu > "Dashboards" > "Criar Novo"
+        2. Escolha layout (1 coluna, 2 colunas, etc.)
+        3. Adicione widgets:
+           • Gráficos de barras/linha
+           • Tabelas de dados
+           • KPIs e métricas
+           • Mapas e visualizações
+        4. Configure filtros globais
+        5. Defina permissões de acesso
+        6. Salve e compartilhe
+        ```
+
+    mobile_usage:
+      title: "## 7. Uso Mobile"
+      content: |
+        ### 7.1 App Mobile vs Web Mobile
+        
+        **Progressive Web App (PWA):**
+        - Acesso via navegador mobile
+        - Funciona offline (limitado)
+        - Push notifications
+        - Adicionar à tela inicial
+        
+        **App Nativo (se disponível):**
+        - Download na App Store/Play Store
+        - Melhor performance
+        - Integração com device
+        
+        ### 7.2 Funcionalidades Mobile
+        
+        **✅ Disponível no Mobile:**
+        - Dashboard principal
+        - Visualização de dados
+        - Consulta de relatórios
+        - Notificações
+        - Aprovações simples
+        
+        **❌ Limitado no Mobile:**
+        - Criação de relatórios complexos
+        - Upload de arquivos grandes
+        - Configurações avançadas
+        - Bulk operations
+        
+        ### 7.3 Otimização Mobile
+        
+        **Dicas de Uso:**
+        - Use orientação portrait para listas
+        - Use landscape para gráficos
+        - Pull-to-refresh para atualizar dados
+        - Swipe para ações rápidas
+        - Use busca por voz quando disponível
+        
+        **Configuração de Notificações:**
+        ```
+        1. Configurações > Notificações
+        2. Escolha tipos de alerta:
+           • Push notifications
+           • Email
+           • SMS (se disponível)
+        3. Configure horários ativos
+        4. Teste as notificações
+        ```
+
+    troubleshooting:
+      title: "## 8. Solução de Problemas"
+      content: |
+        ### 8.1 Problemas Comuns de Login
+        
+        **❌ "Email ou senha incorretos"**
+        ```
+        ✅ Soluções:
+        1. Verifique caps lock
+        2. Use "Esqueci minha senha"
+        3. Tente outro navegador
+        4. Limpe cache e cookies
+        5. Contacte administrador
+        ```
+        
+        **❌ "Conta bloqueada"**
+        ```
+        ✅ Causa: Múltiplas tentativas incorretas
+        ✅ Solução: Aguarde 15 min ou contacte admin
+        ```
+        
+        ### 8.2 Problemas de Performance
+        
+        **❌ Sistema lento**
+        ```
+        ✅ Verificações:
+        1. Teste velocidade da internet
+        2. Feche outras abas do navegador
+        3. Limpe cache do navegador
+        4. Reinicie o navegador
+        5. Teste em horário diferente
+        ```
+        
+        **❌ Relatórios não carregam**
+        ```
+        ✅ Soluções:
+        1. Reduza o período de análise
+        2. Remova filtros complexos
+        3. Tente formato diferente
+        4. Use preview antes de gerar
+        ```
+        
+        ### 8.3 Problemas de Funcionalidade
+        
+        **❌ Botão não funciona**
+        ```
+        ✅ Debug:
+        1. Recarregue a página (F5)
+        2. Verifique permissões
+        3. Teste em navegador diferente
+        4. Desabilite extensões
+        5. Teste em modo incognito
+        ```
+        
+        **❌ Dados não aparecem**
+        ```
+        ✅ Verificações:
+        1. Confirme filtros aplicados
+        2. Verifique período selecionado
+        3. Confirme permissões de acesso
+        4. Teste com dados conhecidos
+        ```
+        
+        ### 8.4 Quando Contactar Suporte
+        
+        **📞 Contacte Imediatamente:**
+        - Dados perdidos ou corrompidos
+        - Erro de segurança
+        - Sistema completamente inacessível
+        - Suspeita de fraude
+        
+        **📧 Email para Suporte:**
+        - Problemas de funcionalidade
+        - Solicitação de nova funcionalidade
+        - Dúvidas sobre uso
+        - Treinamento adicional
+        
+        **📋 Informações para Incluir:**
+        ```
+        • Seu nome e email
+        • Navegador e versão
+        • Sistema operacional
+        • Passos que levaram ao problema
+        • Screenshots (se possível)
+        • Mensagem de erro exata
+        ```
+
+    quick_reference:
+      title: "## 9. Referência Rápida"
+      content: |
+        ### 9.1 Atalhos de Teclado
+        
+        | Ação | Windows/Linux | Mac |
+        |------|---------------|-----|
+        | Busca Rápida | Ctrl + F | Cmd + F |
+        | Novo Item | Ctrl + N | Cmd + N |
+        | Salvar | Ctrl + S | Cmd + S |
+        | Imprimir | Ctrl + P | Cmd + P |
+        | Atualizar | F5 | Cmd + R |
+        | Logout | Ctrl + Alt + L | Cmd + Opt + L |
+        
+        ### 9.2 URLs Importantes
+        ```
+        🏠 Home: https://{{project_name}}.com
+        📊 Relatórios: https://{{project_name}}.com/reports
+        ⚙️ Configurações: https://{{project_name}}.com/settings
+        📚 Ajuda: https://{{project_name}}.com/help
+        🎫 Suporte: https://{{project_name}}.com/support
+        ```
+        
+        ### 9.3 Formatos de Data/Hora
+        ```
+        📅 Data: DD/MM/YYYY (ex: 25/12/2024)
+        🕐 Hora: HH:MM (ex: 14:30)
+        📊 Período: DD/MM - DD/MM (ex: 01/01 - 31/01)
+        ```
+        
+        ### 9.4 Limites do Sistema
+        ```
+        📎 Upload: máximo 50MB por arquivo
+        📊 Relatório: máximo 10.000 registros
+        👥 Projeto: máximo 100 membros
+        📅 Histórico: últimos 2 anos
+        💾 Backup: 30 dias de retenção
+        ```
+
+    support_training:
+      title: "## 10. Suporte e Treinamento"
+      content: |
+        ### 10.1 Canais de Suporte
+        
+        **🔴 Emergência (24/7):**
+        - Telefone: 0800-123-4567
+        - WhatsApp: (11) 99999-9999
+        - Email: emergencia@{{project_name}}.com
+        
+        **🟡 Suporte Técnico (Horário Comercial):**
+        - Email: suporte@{{project_name}}.com
+        - Chat: Ícone 💬 no canto da tela
+        - Portal: https://suporte.{{project_name}}.com
+        
+        **🟢 Dúvidas Gerais:**
+        - FAQ: https://{{project_name}}.com/faq
+        - Comunidade: https://forum.{{project_name}}.com
+        - Videos: https://youtube.com/{{project_name}}
+        
+        ### 10.2 Treinamentos Disponíveis
+        
+        **🎓 Básico (Online - 2h):**
+        - Login e navegação
+        - Funcionalidades principais
+        - Primeiro projeto
+        - Certificado de participação
+        
+        **🎓 Intermediário (Presencial - 4h):**
+        - Relatórios avançados
+        - Configurações personalizadas
+        - Integrações básicas
+        - Hands-on com casos reais
+        
+        **🎓 Avançado (Workshop - 8h):**
+        - Automação de processos
+        - APIs e integrações
+        - Administração do sistema
+        - Customizações avançadas
+        
+        ### 10.3 Recursos de Aprendizado
+        
+        **📚 Documentação:**
+        - User Manual completo (PDF)
+        - API Documentation
+        - Video tutorials
+        - Best practices guide
+        
+        **🎬 Videos Tutoriais:**
+        - Getting Started (15 min)
+        - Daily Tasks (30 min)
+        - Advanced Features (45 min)
+        - Admin Functions (60 min)
+        
+        **💡 Dicas Semanais:**
+        - Newsletter com dicas
+        - Webinars mensais
+        - Feature highlights
+        - User success stories
+        
+        ### 10.4 Feedback e Melhorias
+        
+        **📝 Como Enviar Feedback:**
+        1. Menu > "Feedback" ou ícone 💭
+        2. Escolha categoria:
+           - Bug report
+           - Feature request  
+           - General feedback
+           - Compliment
+        3. Descreva detalhadamente
+        4. Adicione screenshots se útil
+        5. Envie e acompanhe via ticket
+        
+        **🗳️ Pesquisas de Satisfação:**
+        - Trimestral: Survey por email
+        - Pós-suporte: Mini-survey  
+        - Anual: Entrevista individual
+        - Contínua: Feedback na plataforma
+
+validation:
+  checklist:
+    - "✅ Público-alvo claramente definido"
+    - "✅ Funcionalidades principais documentadas"
+    - "✅ Fluxos passo-a-passo incluídos"
+    - "✅ Solução de problemas abrangente"
+    - "✅ Screenshots e exemplos visuais"
+    - "✅ Referência rápida útil"
+    - "✅ Informações de suporte completas"
+    - "✅ Linguagem clara e acessível"
+    - "✅ Navegação intuitiva"
+    - "✅ Feedback dos usuários incorporado"
+
+metadata:
+  agents:
+    primary: carla
+    reviewers: [maria, joao]
+  approvers: [ux_lead, product_manager]
+  version_control:
+    repository: "{{project_repository}}"
+    branch: feature/user-guide
+  tags: [documentation, user-guide, training, support, ux]

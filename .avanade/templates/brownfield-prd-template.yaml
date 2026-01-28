@@ -1,0 +1,496 @@
+template:
+  id: brownfield-prd-template-v2
+  name: Brownfield Enhancement PRD
+  version: 2.0
+  output:
+    format: markdown
+    filename: docs/brownfield-prd.md
+    title: "{{project_name}} Brownfield Enhancement PRD"
+
+workflow:
+  mode: interactive
+  steps:
+    - type: assess
+      agent: maria
+      fields:
+        - project_name: "Nome do projeto de modernização"
+        - legacy_system_name: "Nome do sistema legado"
+        - business_justification: "Justificativa de negócio para modernização"
+        - current_pain_points: "Pontos problemáticos atuais"
+        - modernization_scope: "Escopo da modernização (completa, parcial, incremental)"
+        - stakeholder_groups: "Grupos de stakeholders afetados"
+        - success_metrics: "Métricas de sucesso esperadas"
+    
+    - type: elicit
+      agent: maria
+      process: |
+        Conduzir sessões de elicitação com stakeholders
+        Mapear jornada atual vs jornada futura do usuário
+        Identificar gaps funcionais e técnicos
+        Priorizar requisitos de modernização
+    
+    - type: analyze
+      agent: maria
+      process: |
+        Analisar impacto nos processos de negócio existentes
+        Definir estratégia de migração de usuários
+        Mapear dependências com outros sistemas
+        Avaliar riscos de adoção
+    
+    - type: generate
+      agent: maria
+      template: brownfield_prd_sections
+
+content:
+  sections:
+    executive_summary:
+      title: "## 1. Resumo Executivo"
+      content: |
+        ### 1.1 Visão Geral do Projeto
+        **Projeto:** {{project_name}}
+        **Sistema Legado:** {{legacy_system_name}}
+        **Tipo de Iniciativa:** Modernização Brownfield
+        **Escopo:** {{modernization_scope}}
+        
+        ### 1.2 Justificativa de Negócio
+        {{business_justification}}
+        
+        ### 1.3 Objetivos Principais
+        - **Modernização Tecnológica:** Atualização para stack moderno
+        - **Melhoria de UX:** Experiência do usuário contemporânea
+        - **Eficiência Operacional:** Redução de custos de manutenção
+        - **Escalabilidade:** Suporte ao crescimento do negócio
+        - **Segurança:** Conformidade com padrões atuais
+        
+        ### 1.4 Investimento e ROI Esperado
+        - **Investimento Total:** [Valor estimado]
+        - **Timeline:** [Prazo de implementação]
+        - **ROI Esperado:** [Retorno esperado em X anos]
+        - **Break-even Point:** [Ponto de equilíbrio]
+
+    current_state:
+      title: "## 2. Estado Atual (AS-IS)"
+      content: |
+        ### 2.1 Sistema Legado Atual
+        **Nome:** {{legacy_system_name}}
+        **Tecnologia:** [Stack tecnológica atual]
+        **Última Atualização:** [Data da última atualização]
+        **Usuários Ativos:** [Número de usuários]
+        
+        ### 2.2 Problemas Identificados
+        {{current_pain_points}}
+        
+        **Problemas Técnicos:**
+        - Performance degradada em horários de pico
+        - Interface desatualizada e pouco intuitiva
+        - Dificuldades de manutenção e suporte
+        - Limitações de escalabilidade
+        - Vulnerabilidades de segurança
+        
+        **Problemas de Negócio:**
+        - Baixa produtividade dos usuários
+        - Alto custo de manutenção
+        - Dificuldade para implementar novas funcionalidades
+        - Risco de descontinuidade de suporte
+        
+        ### 2.3 Jornada Atual do Usuário
+        ```
+        Login ──► Dashboard Legacy ──► Funcionalidade A ──► Relatório
+          │              │                    │              │
+          ▼              ▼                    ▼              ▼
+        Lento         Confuso            Complexo        Limitado
+        ```
+        
+        ### 2.4 Integração com Outros Sistemas
+        - **ERP:** [Sistema ERP integrado]
+        - **CRM:** [Sistema CRM integrado]
+        - **Financeiro:** [Sistema financeiro]
+        - **BI/Analytics:** [Ferramentas de BI]
+
+    stakeholders:
+      title: "## 3. Stakeholders e Usuários"
+      content: |
+        ### 3.1 Grupos de Stakeholders
+        {{stakeholder_groups}}
+        
+        ### 3.2 Personas Principais
+        
+        **Persona 1: Usuário Final (Maria - Analista)**
+        - **Idade:** 32 anos
+        - **Experiência:** 8 anos na empresa
+        - **Tech Savviness:** Intermediário
+        - **Frustrations:** Interface lenta, processos manuais
+        - **Goals:** Completar tarefas rapidamente, relatórios precisos
+        
+        **Persona 2: Gerente de TI (João - IT Manager)**
+        - **Idade:** 45 anos
+        - **Experiência:** 15 anos na empresa
+        - **Tech Savviness:** Avançado
+        - **Frustrations:** Alto custo de manutenção, vulnerabilidades
+        - **Goals:** Sistema estável, seguro e de baixa manutenção
+        
+        **Persona 3: Executivo (Carlos - VP)**
+        - **Idade:** 52 anos
+        - **Experiência:** 20 anos na empresa
+        - **Tech Savviness:** Básico
+        - **Frustrations:** ROI unclear, disrupção de negócio
+        - **Goals:** Resultados de negócio, competitive advantage
+        
+        ### 3.3 Matriz de Impacto
+        ```
+        High Impact     │ IT Team        │ End Users
+        Medium Impact   │ Management     │ Partners
+        Low Impact      │ External Users │ Vendors
+        ```
+
+    future_state:
+      title: "## 4. Estado Futuro (TO-BE)"
+      content: |
+        ### 4.1 Visão do Sistema Modernizado
+        **Nova Experiência do Usuário:**
+        - Interface moderna e responsiva
+        - Processos automatizados
+        - Dashboards interativos
+        - Mobile-friendly
+        - Acessibilidade WCAG 2.1 AA
+        
+        **Nova Arquitetura Tecnológica:**
+        - Stack moderno (.NET 8, React, SQL Server)
+        - Arquitetura cloud-native
+        - APIs RESTful
+        - Microservices (quando aplicável)
+        - DevOps e CI/CD
+        
+        ### 4.2 Nova Jornada do Usuário
+        ```
+        SSO Login ──► Modern Dashboard ──► Automated Flow ──► Real-time Reports
+            │               │                    │                  │
+            ▼               ▼                    ▼                  ▼
+          Rápido         Intuitivo           Eficiente           Interativo
+        ```
+        
+        ### 4.3 Benefícios Esperados
+        
+        **Para Usuários Finais:**
+        - 50% redução no tempo para completar tarefas
+        - Interface moderna e intuitiva
+        - Acesso mobile para trabalho remoto
+        - Menos erros manuais
+        
+        **Para TI:**
+        - 60% redução nos custos de manutenção
+        - Deployment automatizado
+        - Monitoring proativo
+        - Melhor segurança e compliance
+        
+        **Para o Negócio:**
+        - Aumento de 30% na produtividade
+        - Time-to-market reduzido para novas features
+        - Better customer experience
+        - Competitive advantage
+
+    requirements:
+      title: "## 5. Requisitos Funcionais"
+      content: |
+        ### 5.1 Requisitos de Modernização
+        
+        **RF001 - Migração de Dados**
+        - **Descrição:** Migrar todos os dados do sistema legado
+        - **Priority:** Critical
+        - **Acceptance Criteria:** 
+          - 100% dos dados migrados sem perda
+          - Validação de integridade
+          - Rollback capability
+        
+        **RF002 - Interface Moderna**
+        - **Descrição:** Nova interface responsiva e moderna
+        - **Priority:** High
+        - **Acceptance Criteria:**
+          - Design system implementation
+          - Mobile-first approach
+          - WCAG 2.1 AA compliance
+        
+        **RF003 - API Integration**
+        - **Descrição:** APIs RESTful para integração
+        - **Priority:** High
+        - **Acceptance Criteria:**
+          - OpenAPI 3.0 specification
+          - Rate limiting
+          - Authentication/Authorization
+        
+        **RF004 - User Management**
+        - **Descrição:** Sistema de gestão de usuários modernizado
+        - **Priority:** Critical
+        - **Acceptance Criteria:**
+          - SSO integration
+          - Role-based access control
+          - User audit trail
+        
+        **RF005 - Reporting Enhancement**
+        - **Descrição:** Relatórios interativos e dashboards
+        - **Priority:** Medium
+        - **Acceptance Criteria:**
+          - Real-time data visualization
+          - Export capabilities
+          - Custom report builder
+        
+        ### 5.2 Requisitos de Transição
+        
+        **RF006 - Parallel Operation**
+        - **Descrição:** Operação paralela durante migração
+        - **Priority:** Critical
+        - **Acceptance Criteria:**
+          - Zero downtime migration
+          - Data synchronization
+          - Gradual user migration
+        
+        **RF007 - Legacy Compatibility**
+        - **Descrição:** Compatibilidade com sistemas legados
+        - **Priority:** High
+        - **Acceptance Criteria:**
+          - API adapters for legacy systems
+          - Data format compatibility
+          - Phased decommissioning
+
+    non_functional_requirements:
+      title: "## 6. Requisitos Não-Funcionais"
+      content: |
+        ### 6.1 Performance
+        - **Response Time:** < 2 segundos para 95% das operações
+        - **Throughput:** Suporte a 1000+ usuários concorrentes
+        - **Availability:** 99.9% uptime (8.76 horas de downtime/ano)
+        - **Scalability:** Auto-scaling baseado em demanda
+        
+        ### 6.2 Usabilidade
+        - **Learning Curve:** Usuários devem ser produtivos em < 1 hora
+        - **Error Prevention:** Validação proativa de dados
+        - **Help System:** Help contextual e documentação
+        - **Accessibility:** Conformidade WCAG 2.1 AA
+        
+        ### 6.3 Segurança
+        - **Authentication:** Multi-factor authentication
+        - **Authorization:** Role-based access control
+        - **Data Encryption:** Encryption at rest and in transit
+        - **Audit Trail:** Logs completos de auditoria
+        - **Penetration Testing:** Testes regulares de segurança
+        
+        ### 6.4 Compatibilidade
+        - **Browsers:** Chrome, Firefox, Safari, Edge (últimas 2 versões)
+        - **Devices:** Desktop, tablet, mobile
+        - **Operating Systems:** Windows 10+, macOS, iOS, Android
+        - **Legacy Integration:** APIs de compatibilidade
+        
+        ### 6.5 Manutenibilidade
+        - **Code Quality:** SonarQube score > 80%
+        - **Documentation:** Documentação técnica completa
+        - **Testing:** Code coverage > 80%
+        - **Deployment:** Automated CI/CD pipeline
+
+    migration_strategy:
+      title: "## 7. Estratégia de Migração"
+      content: |
+        ### 7.1 Abordagem de Migração
+        
+        **Estratégia Escolhida: Strangler Fig Pattern**
+        
+        ```
+        Fase 1: Setup          Fase 2: Coexistência    Fase 3: Substituição
+        ┌─────────────┐        ┌─────────────┐        ┌─────────────┐
+        │ Legacy Only │   ──►  │ Hybrid Mode │   ──►  │ Modern Only │
+        └─────────────┘        └─────────────┘        └─────────────┘
+        ```
+        
+        ### 7.2 Fases de Implementação
+        
+        **Fase 1: Foundation (Semanas 1-4)**
+        - Setup da infraestrutura moderna
+        - Implementação do proxy/router
+        - Migração de funcionalidades de baixo risco
+        
+        **Fase 2: Core Migration (Semanas 5-12)**
+        - Migração de funcionalidades principais
+        - Treinamento dos usuários
+        - Testes de aceitação do usuário
+        
+        **Fase 3: Optimization (Semanas 13-16)**
+        - Otimização de performance
+        - Descomissionamento de componentes legados
+        - Documentação e handover
+        
+        ### 7.3 Critérios de Migração por Funcionalidade
+        - **Low Risk:** Funcionalidades com poucos usuários
+        - **Medium Risk:** Funcionalidades com impacto médio
+        - **High Risk:** Funcionalidades críticas de negócio
+        
+        ### 7.4 User Migration Strategy
+        - **Pilot Group:** 10% dos usuários (power users)
+        - **Gradual Rollout:** 25%, 50%, 75%, 100%
+        - **Rollback Plan:** Capacidade de rollback em cada fase
+
+    success_metrics:
+      title: "## 8. Métricas de Sucesso"
+      content: |
+        ### 8.1 Métricas Definidas
+        {{success_metrics}}
+        
+        ### 8.2 KPIs de Negócio
+        
+        **Produtividade:**
+        - **Baseline:** Tempo médio atual para completar tarefa X
+        - **Target:** 50% de redução no tempo
+        - **Measurement:** Time tracking durante UAT
+        
+        **Satisfação do Usuário:**
+        - **Baseline:** Survey score atual (se disponível)
+        - **Target:** NPS > 7.0
+        - **Measurement:** Surveys mensais pós-implementação
+        
+        **Eficiência Operacional:**
+        - **Baseline:** Custo atual de manutenção/mês
+        - **Target:** 40% de redução nos custos
+        - **Measurement:** TCO tracking por 12 meses
+        
+        ### 8.3 KPIs Técnicos
+        
+        **Performance:**
+        - **Response Time:** < 2 segundos (95th percentile)
+        - **Availability:** > 99.9%
+        - **Error Rate:** < 0.1%
+        
+        **Adoption:**
+        - **User Adoption:** > 90% em 30 dias
+        - **Feature Utilization:** > 80% das features utilizadas
+        - **Training Completion:** 100% dos usuários treinados
+        
+        ### 8.4 Monitoramento Contínuo
+        - **Real User Monitoring (RUM):** Métricas de usuários reais
+        - **Application Performance Monitoring (APM):** Performance técnica
+        - **Business Intelligence:** Dashboards de negócio
+        - **User Feedback:** Feedback contínuo dos usuários
+
+    risks_assumptions:
+      title: "## 9. Riscos e Premissas"
+      content: |
+        ### 9.1 Riscos Identificados
+        
+        **Alto Impacto / Alta Probabilidade:**
+        - **Data Migration Issues:** Problemas na migração de dados
+        - **User Resistance:** Resistência dos usuários à mudança
+        - **Integration Complexity:** Complexidade de integração não prevista
+        
+        **Alto Impacto / Média Probabilidade:**
+        - **Performance Issues:** Problemas de performance não detectados
+        - **Security Vulnerabilities:** Vulnerabilidades de segurança
+        - **Timeline Delays:** Atrasos no cronograma
+        
+        **Médio Impacto / Várias Probabilidades:**
+        - **Budget Overruns:** Estouro de orçamento
+        - **Technical Debt:** Débito técnico não previsto
+        - **Vendor Dependencies:** Dependências de fornecedores
+        
+        ### 9.2 Estratégias de Mitigação
+        
+        **Para Data Migration:**
+        - Ambiente de testes dedicado
+        - Scripts de validação automática
+        - Plano de rollback detalhado
+        
+        **Para User Resistance:**
+        - Programa de change management
+        - Treinamento antecipado
+        - Champions program
+        
+        **Para Integration Issues:**
+        - POCs de integração antecipados
+        - Arquiteto de integração dedicado
+        - APIs de fallback
+        
+        ### 9.3 Premissas Críticas
+        - **Stakeholder Commitment:** Comprometimento da liderança
+        - **Resource Availability:** Disponibilidade da equipe
+        - **Technology Stability:** Estabilidade da stack escolhida
+        - **Data Quality:** Qualidade dos dados legados
+        - **Network Infrastructure:** Infraestrutura de rede adequada
+
+    implementation_roadmap:
+      title: "## 10. Roadmap de Implementação"
+      content: |
+        ### 10.1 Timeline Macro
+        
+        ```
+        Q1 2024        Q2 2024        Q3 2024        Q4 2024
+        ────────────────────────────────────────────────────
+        │ Planning    │ Development │ Migration   │ Optimization │
+        │ & Design    │ & Testing   │ & Deploy    │ & Support    │
+        ```
+        
+        ### 10.2 Milestones Principais
+        
+        **M1: Project Kickoff (Week 1)**
+        - Equipe alocada
+        - Ambiente de desenvolvimento setup
+        - Documentação inicial aprovada
+        
+        **M2: Foundation Complete (Week 4)**
+        - Infraestrutura moderna implementada
+        - CI/CD pipeline funcionando
+        - Primeiros componentes migrados
+        
+        **M3: Core Migration Complete (Week 12)**
+        - Funcionalidades principais migradas
+        - Testes de integração completos
+        - UAT iniciado
+        
+        **M4: Production Ready (Week 16)**
+        - Sistema em produção
+        - Usuários migrados
+        - Monitoramento ativo
+        
+        ### 10.3 Recursos Necessários
+        
+        **Equipe de Desenvolvimento:**
+        - 1 Solution Architect
+        - 2 Full-stack Developers
+        - 1 Frontend Specialist
+        - 1 Backend Specialist
+        - 1 DevOps Engineer
+        
+        **Equipe de Negócio:**
+        - 1 Product Owner
+        - 1 Business Analyst
+        - 2 Subject Matter Experts
+        - 1 Change Manager
+        
+        **Equipe de QA:**
+        - 1 QA Lead
+        - 2 QA Engineers
+        - 1 Performance Tester
+        
+        ### 10.4 Budget Breakdown
+        - **Development:** 60% do orçamento
+        - **Infrastructure:** 20% do orçamento
+        - **Training & Change Management:** 10% do orçamento
+        - **Contingency:** 10% do orçamento
+
+validation:
+  checklist:
+    - "✅ Justificativa de negócio clara e aprovada"
+    - "✅ Estado atual documentado e validado"
+    - "✅ Stakeholders identificados e engajados"
+    - "✅ Visão futura definida e alinhada"
+    - "✅ Requisitos funcionais especificados"
+    - "✅ Requisitos não-funcionais definidos"
+    - "✅ Estratégia de migração estabelecida"
+    - "✅ Métricas de sucesso definidas"
+    - "✅ Riscos identificados e mitigados"
+    - "✅ Roadmap e recursos aprovados"
+
+metadata:
+  agents:
+    primary: maria
+    reviewers: [wilson, joao, tiago]
+  approvers: [product_manager, business_sponsor]
+  version_control:
+    repository: "{{project_repository}}"
+    branch: feature/brownfield-prd
+  tags: [brownfield, prd, modernization, legacy, enhancement]

@@ -1,0 +1,596 @@
+template:
+  id: architecture-avanade-template
+  name: Documento de Arquitetura de Software Avanade
+  version: 2.0
+  output:
+    format: markdown
+    filename: docs/architecture.md
+    title: "{{project_name}} Documento de Arquitetura de Software Avanade"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+  context_validation: true
+
+agents:
+  responsible: wilson-architect
+  reviewers: [joao-pm, tiago-dev]
+  approvers: [joao-pm]
+
+sections:
+  - id: introducao
+    title: 1. Introdução
+    instruction: |
+      Estabeleça o contexto e propósito do documento de arquitetura. Defina o escopo da arquitetura, 
+      principais stakeholders e como esta arquitetura se alinha aos objetivos de negócio do projeto.
+    sections:
+      - id: proposito-escopo
+        title: 1.1 Propósito e Escopo
+        type: paragraphs
+        instruction: Descreva o propósito deste documento e delimite o escopo da arquitetura sendo documentada
+        elicitation:
+          questions:
+            - "Qual é o objetivo principal deste sistema/aplicação?"
+            - "Quais são os limites do sistema que estamos arquitetando?"
+            - "Que aspectos da arquitetura estão fora do escopo deste documento?"
+      
+      - id: stakeholders
+        title: 1.2 Stakeholders
+        type: table
+        instruction: |
+          Identifique todos os stakeholders relevantes para a arquitetura
+        headers: [Nome, Papel, Organização, Interesse na Arquitetura]
+        elicitation:
+          questions:
+            - "Quem são os principais usuários do sistema?"
+            - "Quais equipes técnicas estarão envolvidas no desenvolvimento e manutenção?"
+            - "Quem precisa aprovar decisões arquiteturais?"
+      
+      - id: referencias
+        title: 1.3 Documentos de Referência
+        type: bullet-list
+        instruction: Liste documentos relacionados como PRD, Discovery, especificações técnicas
+        elicitation:
+          questions:
+            - "Quais documentos de requisitos estão disponíveis?"
+            - "Existem padrões arquiteturais ou guidelines da organização?"
+            - "Há documentação de sistemas existentes que serão integrados?"
+
+  - id: visao-geral-arquitetura
+    title: 2. Visão Geral da Arquitetura
+    instruction: |
+      Apresente uma visão de alto nível da arquitetura, incluindo padrões arquiteturais escolhidos,
+      principais componentes e como eles se relacionam.
+    sections:
+      - id: abordagem-arquitetural
+        title: 2.1 Abordagem Arquitetural
+        type: paragraphs
+        instruction: |
+          Descreva o padrão/estilo arquitetural principal (microserviços, monolítico, serverless, etc.) 
+          e justifique a escolha
+        elicitation:
+          questions:
+            - "Qual padrão arquitetural foi escolhido (microserviços, monolítico, serverless)?"
+            - "Por que este padrão é adequado para os requisitos do projeto?"
+            - "Quais são as principais vantagens e desvantagens da abordagem escolhida?"
+      
+      - id: principios-arquiteturais
+        title: 2.2 Princípios Arquiteturais
+        type: bullet-list
+        instruction: |
+          Liste e explique os princípios fundamentais que guiam as decisões arquiteturais
+        elicitation:
+          questions:
+            - "Quais são os princípios de design mais importantes (escalabilidade, manutenibilidade, performance)?"
+            - "Há restrições ou guidelines organizacionais que devem ser seguidas?"
+            - "Como priorizamos trade-offs entre diferentes qualidades (ex: performance vs simplicidade)?"
+      
+      - id: diagrama-contexto
+        title: 2.3 Diagrama de Contexto
+        type: diagram
+        instruction: |
+          Crie um diagrama de contexto mostrando o sistema e suas interfaces externas
+        elicitation:
+          questions:
+            - "Quais são os sistemas externos que nosso sistema precisa integrar?"
+            - "Quem são os diferentes tipos de usuários?"
+            - "Quais APIs ou serviços externos serão consumidos?"
+
+  - id: stack-tecnologico
+    title: 3. Stack Tecnológico
+    instruction: |
+      Detalhe todas as tecnologias que serão utilizadas na implementação,
+      incluindo justificativas para cada escolha.
+    sections:
+      - id: linguagens-frameworks
+        title: 3.1 Linguagens e Frameworks
+        type: table
+        headers: [Componente, Tecnologia, Versão, Justificativa]
+        instruction: |
+          Liste todas as linguagens de programação e frameworks que serão utilizados
+        elicitation:
+          questions:
+            - "Quais linguagens de programação serão utilizadas para backend, frontend, mobile?"
+            - "Que frameworks foram escolhidos e por quê?"
+            - "Existem restrições de versão por compatibilidade ou suporte?"
+      
+      - id: plataforma-hospedagem
+        title: 3.2 Plataforma de Hospedagem
+        type: paragraphs
+        instruction: |
+          Descreva a plataforma de cloud ou on-premise onde o sistema será executado
+        elicitation:
+          questions:
+            - "O sistema será hospedado em qual cloud provider (Azure, AWS, GCP) ou on-premise?"
+            - "Quais serviços específicos da plataforma serão utilizados?"
+            - "Há requisitos de localização geográfica dos dados?"
+      
+      - id: banco-dados
+        title: 3.3 Banco de Dados
+        type: table
+        headers: [Tipo de Dado, Tecnologia, Justificativa, Modelo de Dados]
+        instruction: |
+          Especifique as tecnologias de persistência para diferentes tipos de dados
+        elicitation:
+          questions:
+            - "Que tipos de dados precisam ser armazenados (transacionais, documentos, cache, etc.)?"
+            - "Serão utilizados bancos relacionais, NoSQL, ou ambos?"
+            - "Há requisitos específicos de performance ou consistência de dados?"
+      
+      - id: integracao-apis
+        title: 3.4 Integração e APIs
+        type: table
+        headers: [Sistema/Serviço, Protocolo, Formato, Autenticação]
+        instruction: |
+          Documente todas as integrações externas e padrões de API
+        elicitation:
+          questions:
+            - "Quais sistemas externos precisam ser integrados?"
+            - "Que protocolos serão utilizados (REST, GraphQL, gRPC, eventos)?"
+            - "Como será feita a autenticação e autorização das integrações?"
+
+  - id: componentes-principais
+    title: 4. Componentes Principais
+    instruction: |
+      Detalhe os principais componentes/módulos do sistema e suas responsabilidades,
+      interfaces e dependências.
+    sections:
+      - id: diagrama-componentes
+        title: 4.1 Diagrama de Componentes
+        type: diagram
+        instruction: |
+          Crie um diagrama mostrando os principais componentes e suas relações
+        elicitation:
+          questions:
+            - "Quais são os módulos/componentes principais do sistema?"
+            - "Como estes componentes se comunicam entre si?"
+            - "Quais são as interfaces bem definidas entre componentes?"
+      
+      - id: detalhamento-componentes
+        title: 4.2 Detalhamento dos Componentes
+        type: nested-sections
+        instruction: |
+          Para cada componente principal, documente suas responsabilidades e interfaces
+        elicitation:
+          questions:
+            - "Qual é a responsabilidade específica de cada componente?"
+            - "Quais dados cada componente processa?"
+            - "Que operações/serviços cada componente expõe?"
+        sections:
+          - id: componente-template
+            title: "[Nome do Componente]"
+            type: structured
+            fields:
+              - field: responsabilidades
+                title: Responsabilidades
+                type: bullet-list
+              - field: interfaces
+                title: Interfaces
+                type: table
+                headers: [Interface, Tipo, Descrição]
+              - field: dependencias
+                title: Dependências
+                type: bullet-list
+              - field: dados
+                title: Dados Gerenciados
+                type: bullet-list
+
+  - id: fluxos-dados
+    title: 5. Fluxos de Dados e Comunicação
+    instruction: |
+      Documente como os dados fluem através do sistema e padrões de comunicação
+      entre componentes e sistemas externos.
+    sections:
+      - id: padroes-comunicacao
+        title: 5.1 Padrões de Comunicação
+        type: paragraphs
+        instruction: |
+          Descreva os padrões de comunicação utilizados (síncrono, assíncrono, eventos)
+        elicitation:
+          questions:
+            - "Quais operações são síncronas vs assíncronas?"
+            - "Como são tratados eventos e notificações?"
+            - "Há necessidade de processamento em lote ou tempo real?"
+      
+      - id: diagramas-fluxo
+        title: 5.2 Diagramas de Fluxo de Dados
+        type: diagram
+        instruction: |
+          Crie diagramas mostrando fluxos de dados para cenários principais
+        elicitation:
+          questions:
+            - "Quais são os fluxos de dados mais críticos do sistema?"
+            - "Como os dados fluem desde a entrada até a persistência?"
+            - "Onde ocorrem transformações ou validações dos dados?"
+      
+      - id: mensageria-eventos
+        title: 5.3 Mensageria e Eventos
+        type: paragraphs
+        instruction: |
+          Se aplicável, detalhe a arquitetura de eventos e mensageria
+        elicitation:
+          questions:
+            - "Será utilizado message broker ou event streaming?"
+            - "Quais são os principais tipos de eventos do domínio?"
+            - "Como é garantida a ordem e confiabilidade das mensagens?"
+
+  - id: seguranca
+    title: 6. Segurança
+    instruction: |
+      Documente todos os aspectos de segurança da arquitetura, incluindo autenticação,
+      autorização, proteção de dados e compliance.
+    sections:
+      - id: autenticacao-autorizacao
+        title: 6.1 Autenticação e Autorização
+        type: paragraphs
+        instruction: |
+          Descreva como usuários e sistemas são autenticados e autorizados
+        elicitation:
+          questions:
+            - "Como será feita a autenticação de usuários (OAuth, SAML, JWT)?"
+            - "Qual é o modelo de autorização (RBAC, ABAC)?"
+            - "Como são gerenciadas as credenciais de sistema para integrações?"
+      
+      - id: protecao-dados
+        title: 6.2 Proteção de Dados
+        type: bullet-list
+        instruction: |
+          Liste as medidas de proteção de dados em trânsito e em repouso
+        elicitation:
+          questions:
+            - "Como os dados são criptografados em trânsito e em repouso?"
+            - "Quais dados são considerados sensíveis e requerem proteção especial?"
+            - "Como é feito o mascaramento de dados em ambientes não-produtivos?"
+      
+      - id: compliance
+        title: 6.3 Compliance e Regulamentações
+        type: bullet-list
+        instruction: |
+          Identifique requisitos de compliance que impactam a arquitetura
+        elicitation:
+          questions:
+            - "Quais regulamentações se aplicam (LGPD, GDPR, SOX, PCI-DSS)?"
+            - "Há requisitos de auditoria ou logging de ações dos usuários?"
+            - "Existem restrições geográficas para armazenamento de dados?"
+      
+      - id: ameacas-mitigacoes
+        title: 6.4 Ameaças e Mitigações
+        type: table
+        headers: [Ameaça, Probabilidade, Impacto, Mitigação]
+        instruction: |
+          Identifique principais ameaças de segurança e suas mitigações
+        elicitation:
+          questions:
+            - "Quais são as principais ameaças de segurança identificadas?"
+            - "Como cada ameaça é mitigada pela arquitetura?"
+            - "Há testes de segurança planejados (penetration testing, code scanning)?"
+
+  - id: performance-escalabilidade
+    title: 7. Performance e Escalabilidade
+    instruction: |
+      Documente requisitos e estratégias para performance e escalabilidade do sistema.
+    sections:
+      - id: requisitos-performance
+        title: 7.1 Requisitos de Performance
+        type: table
+        headers: [Métrica, Valor Alvo, Condição, Método de Medição]
+        instruction: |
+          Especifique metas quantificáveis de performance
+        elicitation:
+          questions:
+            - "Quais são os SLAs de tempo de resposta para diferentes operações?"
+            - "Qual é o volume esperado de transações por segundo?"
+            - "Há picos de carga previsíveis que devem ser suportados?"
+      
+      - id: estrategias-escalabilidade
+        title: 7.2 Estratégias de Escalabilidade
+        type: paragraphs
+        instruction: |
+          Descreva como o sistema escalará com o crescimento da demanda
+        elicitation:
+          questions:
+            - "O sistema escalará horizontalmente ou verticalmente?"
+            - "Quais componentes são stateless vs stateful?"
+            - "Como será feita a distribuição de carga?"
+      
+      - id: cache-otimizacao
+        title: 7.3 Cache e Otimizações
+        type: bullet-list
+        instruction: |
+          Identifique estratégias de cache e outras otimizações de performance
+        elicitation:
+          questions:
+            - "Onde serão implementadas camadas de cache?"
+            - "Que dados são bons candidatos para cache?"
+            - "Há otimizações específicas de banco de dados necessárias?"
+
+  - id: monitoramento-observabilidade
+    title: 8. Monitoramento e Observabilidade
+    instruction: |
+      Defina a estratégia de monitoramento, logging e observabilidade do sistema.
+    sections:
+      - id: metricas-principais
+        title: 8.1 Métricas Principais
+        type: table
+        headers: [Métrica, Descrição, Threshold/Alerta, Responsável]
+        instruction: |
+          Liste as métricas mais importantes para monitorar a saúde do sistema
+        elicitation:
+          questions:
+            - "Quais métricas são críticas para o negócio (availability, response time)?"
+            - "Que métricas técnicas devem ser monitoradas (CPU, memory, disk)?"
+            - "Quais são os thresholds para alertas?"
+      
+      - id: logging-auditoria
+        title: 8.2 Logging e Auditoria
+        type: paragraphs
+        instruction: |
+          Descreva a estratégia de logging e requirements de auditoria
+        elicitation:
+          questions:
+            - "Que eventos devem ser logados para debugging?"
+            - "Quais ações precisam ser auditadas para compliance?"
+            - "Por quanto tempo os logs devem ser retidos?"
+      
+      - id: ferramentas-monitoring
+        title: 8.3 Ferramentas de Monitoramento
+        type: bullet-list
+        instruction: |
+          Especifique as ferramentas que serão utilizadas para monitoramento
+        elicitation:
+          questions:
+            - "Que ferramentas serão usadas para métricas, logs e traces?"
+            - "Como os alertas serão configurados e para quem?"
+            - "Há dashboards específicos que precisam ser criados?"
+
+  - id: testes
+    title: 9. Estratégia de Testes
+    instruction: |
+      Defina a abordagem de testes em diferentes níveis da arquitetura.
+    sections:
+      - id: niveis-teste
+        title: 9.1 Níveis de Teste
+        type: table
+        headers: [Tipo de Teste, Escopo, Ferramentas, Responsável, % Cobertura Alvo]
+        instruction: |
+          Defina a pirâmide de testes e responsabilidades
+        elicitation:
+          questions:
+            - "Que tipos de teste serão implementados (unit, integration, e2e)?"
+            - "Qual é a meta de cobertura de código para cada nível?"
+            - "Que ferramentas de teste serão utilizadas?"
+      
+      - id: testes-integracao
+        title: 9.2 Testes de Integração
+        type: paragraphs
+        instruction: |
+          Detalhe a estratégia para testes de integração com sistemas externos
+        elicitation:
+          questions:
+            - "Como serão testadas as integrações com sistemas externos?"
+            - "Serão utilizados mocks, stubs ou ambientes de teste?"
+            - "Como garantir que mudanças em dependências não quebrem integrações?"
+      
+      - id: testes-performance
+        title: 9.3 Testes de Performance
+        type: paragraphs
+        instruction: |
+          Descreva a estratégia de testes de carga e performance
+        elicitation:
+          questions:
+            - "Que tipos de testes de performance serão executados?"
+            - "Qual é o ambiente para testes de carga?"
+            - "Como os resultados de performance serão validados?"
+
+  - id: deployment-operacoes
+    title: 10. Deployment e Operações
+    instruction: |
+      Documente a estratégia de deployment, ambientes e operações do sistema.
+    sections:
+      - id: ambientes
+        title: 10.1 Ambientes
+        type: table
+        headers: [Ambiente, Propósito, Configuração, Dados, Acesso]
+        instruction: |
+          Descreva todos os ambientes desde desenvolvimento até produção
+        elicitation:
+          questions:
+            - "Quantos e quais ambientes serão mantidos (dev, test, staging, prod)?"
+            - "Como os ambientes diferem em termos de configuração e dados?"
+            - "Quem tem acesso a cada ambiente?"
+      
+      - id: pipeline-cicd
+        title: 10.2 Pipeline CI/CD
+        type: paragraphs
+        instruction: |
+          Descreva o processo de build, test e deploy
+        elicitation:
+          questions:
+            - "Qual ferramenta será usada para CI/CD (Azure DevOps, GitHub Actions, Jenkins)?"
+            - "Quais são os estágios do pipeline?"
+            - "Como são feitos rollbacks em caso de problemas?"
+      
+      - id: estrategia-deployment
+        title: 10.3 Estratégia de Deployment
+        type: paragraphs
+        instruction: |
+          Defina como novos releases serão deployados em produção
+        elicitation:
+          questions:
+            - "Será usado blue-green, rolling updates, ou canary deployment?"
+            - "Como minimizar o downtime durante deployments?"
+            - "Há dependências entre componentes que impactam a ordem de deploy?"
+      
+      - id: backup-dr
+        title: 10.4 Backup e Disaster Recovery
+        type: bullet-list
+        instruction: |
+          Documente a estratégia de backup e recuperação de desastres
+        elicitation:
+          questions:
+            - "Com que frequência serão feitos backups?"
+            - "Qual é o RTO (Recovery Time Objective) e RPO (Recovery Point Objective)?"
+            - "Como será testada a recuperação de desastres?"
+
+  - id: riscos-dependencias
+    title: 11. Riscos e Dependências
+    instruction: |
+      Identifique riscos arquiteturais e dependências críticas que podem impactar o projeto.
+    sections:
+      - id: riscos-arquiteturais
+        title: 11.1 Riscos Arquiteturais
+        type: table
+        headers: [Risco, Probabilidade, Impacto, Mitigação, Owner]
+        instruction: |
+          Liste riscos específicos da arquitetura escolhida
+        elicitation:
+          questions:
+            - "Quais são os pontos únicos de falha na arquitetura?"
+            - "Que componentes têm maior complexidade ou incerteza?"
+            - "Há dependências externas que podem se tornar gargalos?"
+      
+      - id: dependencias-externas
+        title: 11.2 Dependências Externas
+        type: table
+        headers: [Dependência, Tipo, Criticidade, SLA, Plano B]
+        instruction: |
+          Documente todas as dependências externas críticas
+        elicitation:
+          questions:
+            - "De quais serviços externos o sistema depende?"
+            - "Qual é o SLA garantido por cada dependência?"
+            - "Há alternativas caso uma dependência fique indisponível?"
+      
+      - id: decisoes-arquiteturais
+        title: 11.3 Decisões Arquiteturais (ADRs)
+        type: structured-list
+        instruction: |
+          Documente as principais decisões arquiteturais e suas justificativas
+        elicitation:
+          questions:
+            - "Quais foram as principais decisões arquiteturais tomadas?"
+            - "Que alternativas foram consideradas para cada decisão?"
+            - "Quais são os trade-offs de cada decisão?"
+        fields:
+          - field: decisao
+            title: Decisão
+            type: text
+          - field: contexto
+            title: Contexto
+            type: paragraph
+          - field: alternativas
+            title: Alternativas Consideradas
+            type: bullet-list
+          - field: justificativa
+            title: Justificativa
+            type: paragraph
+          - field: consequencias
+            title: Consequências
+            type: bullet-list
+
+  - id: roadmap-evolucao
+    title: 12. Roadmap e Evolução
+    instruction: |
+      Planeje como a arquitetura evoluirá no tempo e como será mantida.
+    sections:
+      - id: fases-implementacao
+        title: 12.1 Fases de Implementação
+        type: table
+        headers: [Fase, Duração, Componentes, Riscos, Critério de Sucesso]
+        instruction: |
+          Defina como a arquitetura será implementada em fases
+        elicitation:
+          questions:
+            - "Como a implementação será dividida em fases/releases?"
+            - "Qual é a ordem de prioridade dos componentes?"
+            - "Como cada fase agregará valor ao negócio?"
+      
+      - id: evolucao-futura
+        title: 12.2 Evolução Futura
+        type: paragraphs
+        instruction: |
+          Descreva como a arquitetura pode evoluir para atender necessidades futuras
+        elicitation:
+          questions:
+            - "Que mudanças futuras são antecipadas no negócio?"
+            - "Como a arquitetura atual suportará crescimento e novos requisitos?"
+            - "Que componentes provavelmente precisarão ser refatorados primeiro?"
+      
+      - id: manutencao-governance
+        title: 12.3 Manutenção e Governance
+        type: bullet-list
+        instruction: |
+          Defina como a arquitetura será mantida e governada ao longo do tempo
+        elicitation:
+          questions:
+            - "Como as mudanças arquiteturais serão aprovadas e documentadas?"
+            - "Quem será responsável pela evolução da arquitetura?"
+            - "Como será mantida a consistência entre diferentes equipes?"
+
+  - id: apendices
+    title: 13. Apêndices
+    instruction: |
+      Inclua informações de apoio como glossário, referências e detalhes técnicos específicos.
+    sections:
+      - id: glossario
+        title: 13.1 Glossário
+        type: table
+        headers: [Termo, Definição]
+        instruction: |
+          Defina termos técnicos e de negócio utilizados no documento
+        elicitation:
+          questions:
+            - "Quais termos técnicos podem não ser claros para todos os leitores?"
+            - "Há conceitos de negócio específicos do domínio?"
+      
+      - id: diagramas-detalhados
+        title: 13.2 Diagramas Detalhados
+        type: diagrams
+        instruction: |
+          Inclua diagramas técnicos detalhados que complementam o documento
+      
+      - id: especificacoes-tecnicas
+        title: 13.3 Especificações Técnicas Detalhadas
+        type: structured-sections
+        instruction: |
+          Inclua detalhes técnicos específicos que são relevantes mas muito detalhados para seções principais
+
+validation:
+  required_sections: [introducao, visao-geral-arquitetura, stack-tecnologico, componentes-principais, seguranca]
+  review_checklist:
+    - "Todos os requisitos não-funcionais foram abordados?"
+    - "A arquitetura está alinhada com os princípios da organização?"
+    - "Os riscos foram adequadamente identificados e mitigados?"
+    - "A estratégia de testes cobre todos os componentes críticos?"
+    - "O plano de deployment é viável e tem rollback?"
+
+agents_permissions:
+  wilson-architect:
+    edit: all_sections
+    approve: [stack-tecnologico, componentes-principais, performance-escalabilidade]
+  joao-pm:
+    edit: [introducao, riscos-dependencias, roadmap-evolucao]
+    approve: all_sections
+  tiago-dev:
+    edit: [stack-tecnologico, testes, deployment-operacoes]
+    review: all_sections
