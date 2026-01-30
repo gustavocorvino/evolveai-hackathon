@@ -430,9 +430,15 @@ const AdminUseCaseManager = () => {
           </label>
 
           <button
-            onClick={() => {
-              setShowForm(!showForm);
-              if (!showForm) resetForm();
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('=== CLIQUE NO BOTÃO ===');
+              console.log('showForm antes:', showForm);
+              const newValue = !showForm;
+              console.log('Novo valor será:', newValue);
+              setShowForm(newValue);
             }}
             className="px-6 py-3 bg-gradient-to-r from-neon-cyan to-cosmic-purple
                      text-white font-display font-bold rounded-lg
@@ -466,15 +472,10 @@ const AdminUseCaseManager = () => {
       )}
 
       {/* Form */}
-      <AnimatePresence>
-        {showForm && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
-          >
-            <form onSubmit={handleSubmit} className="bg-neutral-dark/50 backdrop-blur-lg border-2 border-neon-cyan/30 rounded-xl p-6 space-y-4">
+      {console.log('Renderizando, showForm =', showForm)}
+      {showForm && (
+        <div className="overflow-hidden">
+          <form onSubmit={handleSubmit} className="bg-neutral-dark/50 backdrop-blur-lg border-2 border-neon-cyan/30 rounded-xl p-6 space-y-4">
               <h3 className="font-display text-2xl font-bold text-neon-cyan mb-4">
                 {editingCase ? '✏️ Editar Caso de Uso' : '➕ Novo Caso de Uso'}
               </h3>
@@ -628,9 +629,8 @@ const AdminUseCaseManager = () => {
                 </button>
               </div>
             </form>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
 
       {/* Cases List */}
       <div className="space-y-4">
