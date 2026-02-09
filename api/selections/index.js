@@ -3,6 +3,7 @@
  * 
  * GET - Retorna todas as seleções
  * POST - Adiciona/atualiza uma seleção
+ * DELETE - Remove uma seleção (liberar caso)
  */
 
 module.exports = async function (context, req) {
@@ -12,7 +13,7 @@ module.exports = async function (context, req) {
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type'
   };
 
@@ -163,6 +164,73 @@ module.exports = async function (context, req) {
           success: true, 
           message: 'Seleção registrada com sucesso',
           selection: newSelection
+        }
+      };
+      return;
+    }
+
+    // DELETE - Remove uma seleção específica (liberar caso)
+    if (req.method === 'DELETE') {
+      const body = req.body;
+      
+      if (!body || !body.useCaseId) {
+        context.res = {
+          status: 400,
+          headers,
+          body: { error: 'Body deve conter useCaseId' }
+        };
+        return;
+      }
+
+      // Buscar seleções existentes
+      let existingSelections = {};
+      const getRes = await fetch(blobUrl);
+      if (getRes.status === 200) {
+        const data = await getRes.json();
+        existingSelections = data.selections || data || {};
+      }
+
+      // Verificar se existe a seleção
+      if (!existingSelections[body.useCaseId]) {
+        context.res = {
+          status: 404,
+          headers,
+          body: { error: 'Seleção não encontrada' }
+        };
+        return;
+      }
+
+      // Remover a seleção
+      const removedSelection = existingSelections[body.useCaseId];
+      delete existingSelections[body.useCaseId];
+
+      // Salvar no Blob
+      const dataToSave = {
+        selections: existingSelections,
+        updatedAt: new Date().toISOString()
+      };
+
+      const putRes = await fetch(blobUrl, {
+        method: 'PUT',
+        headers: {
+          'x-ms-blob-type': 'BlockBlob',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSave, null, 2)
+      });
+
+      if (!putRes.ok) {
+        const msg = await putRes.text();
+        throw new Error(`Erro ao salvar: ${msg}`);
+      }
+
+      context.res = {
+        status: 200,
+        headers,
+        body: { 
+          success: true, 
+          message: 'Seleção liberada com sucesso',
+          removedSelection
         }
       };
       return;

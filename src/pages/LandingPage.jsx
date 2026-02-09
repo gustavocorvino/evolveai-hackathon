@@ -8,9 +8,21 @@ const LandingPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
+  const validateEmail = (email) => {
+    // Validação silenciosa - só aceita @avanade.com
+    return email.toLowerCase().endsWith('@avanade.com');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    // Validar email sem expor a regra
+    if (!validateEmail(formData.email)) {
+      setError('E-mail inválido');
+      return;
+    }
+    
     setLoading(true);
     
     try {

@@ -143,9 +143,9 @@ const GalleryPageSimple = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  className={`relative ${useCase.isSelected ? 'opacity-60' : ''}`}
+                  className={`relative ${useCase.isSelected ? 'opacity-50' : ''}`}
                 >
-                  {/* Badge de selecionado */}
+                  {/* Badge de selecionado - só aparece quando selecionado */}
                   {useCase.isSelected && (
                     <div className="absolute -top-2 -right-2 z-10 px-3 py-1 bg-nova-red rounded-full text-white text-xs font-bold shadow-lg">
                       ❌ Já selecionado
@@ -153,11 +153,11 @@ const GalleryPageSimple = () => {
                   )}
                   
                   <div 
-                    onClick={() => handleOpenModal(useCase)}
-                    className={`cursor-pointer transition-all duration-300 ${
+                    onClick={() => !useCase.isSelected && handleOpenModal(useCase)}
+                    className={`transition-all duration-300 ${
                       useCase.isSelected 
-                        ? 'grayscale hover:grayscale-0' 
-                        : 'hover:scale-[1.02]'
+                        ? 'grayscale cursor-not-allowed' 
+                        : 'cursor-pointer hover:scale-[1.02]'
                     }`}
                   >
                     <UseCaseCard useCase={useCase} />

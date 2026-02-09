@@ -159,15 +159,44 @@ export async function saveSelection(selectionData) {
 }
 
 /**
- * Limpar todas as seleções (admin)
+ * Liberar uma seleção específica (admin)
  */
-export async function clearSelections() {
+export async function releaseSelection(useCaseId) {
   try {
-    // Por enquanto, só limpa localmente
-    // TODO: Implementar endpoint DELETE na API
-    localStorage.removeItem(LOCAL_SELECTIONS_KEY);
-    return { success: true };
+    const response = await fetch(`${API_BASE}/selections`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ useCaseId })
+    });
+
+    if (response.ok) {
+      // Atualizar cache local
+      const cached = localStorage.getItem(LOCAL_SELECTIONS_KEY);
+      if (cached) {
+        const selections = JSON.parse(cached);
+        delete selections[useCaseId];
+        localStorage.setItem(LOCAL_SELECTIONS_KEY, JSON.stringify(selections));
+      }
+      return { success: true, source: 'api' };
+    }
+
+    const data = await response.json();
+    throw new Error(data.error || 'Erro ao liberar seleção');
   } catch (error) {
+    // Se erro de rede, liberar localmente
+    if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('Failed')) {
+      console.warn('API não disponível, liberando localmente');
+      
+      const cached = localStorage.getItem(LOCAL_SELECTIONS_KEY);
+      if (cached) {
+        const selections = JSON.parse(cached);
+        delete selections[useCaseId];
+        localStorage.setItem(LOCAL_SELECTIONS_KEY, JSON.stringify(selections));
+      }
+      
+      return { success: true, source: 'local' };
+    }
+    
     throw error;
   }
 }

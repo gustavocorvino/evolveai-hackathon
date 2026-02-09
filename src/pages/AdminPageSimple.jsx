@@ -6,7 +6,7 @@ import {
   saveUseCases, 
   parseCSVToUseCases, 
   generateCSVExport,
-  clearSelections 
+  releaseSelection 
 } from '../services/data.service';
 
 const AdminPageSimple = () => {
@@ -137,20 +137,21 @@ const AdminPageSimple = () => {
     }
   };
 
-  // Limpar seleções
-  const handleClearSelections = async () => {
-    if (!window.confirm('⚠️ Tem certeza que deseja limpar TODAS as seleções? Esta ação não pode ser desfeita.')) {
+  // Liberar caso específico
+  const handleReleaseCase = async (useCaseId, useCaseTitle) => {
+    if (!window.confirm(`🔓 Liberar o caso "${useCaseTitle}" para ser selecionado por outra equipe?`)) {
       return;
     }
 
     try {
-      await clearSelections();
+      await releaseSelection(useCaseId);
       if (typeof refreshSelections === 'function') {
-        refreshSelections();
+        await refreshSelections();
       }
+      // Força refresh da página para atualizar o estado
       window.location.reload();
     } catch (err) {
-      alert('Erro ao limpar seleções: ' + err.message);
+      alert('Erro ao liberar caso: ' + err.message);
     }
   };
 
@@ -213,16 +214,6 @@ const AdminPageSimple = () => {
                          transition-all duration-300 flex items-center gap-2"
               >
                 📥 Exportar CSV
-              </button>
-
-              {/* Limpar Seleções */}
-              <button
-                onClick={handleClearSelections}
-                className="px-4 py-3 bg-gradient-to-r from-solar-orange to-alert-red rounded-lg
-                         font-bold text-white hover:opacity-90
-                         transition-all duration-300 flex items-center gap-2"
-              >
-                🗑️ Limpar Seleções
               </button>
             </div>
           </div>
@@ -339,6 +330,19 @@ const AdminPageSimple = () => {
                     <p className="text-neutral-light/50 text-xs mt-1">
                       🕐 {new Date(useCase.selectedBy.timestamp).toLocaleString('pt-BR')}
                     </p>
+                    
+                    {/* Botão Liberar Caso */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleReleaseCase(useCase.id, useCase.title);
+                      }}
+                      className="mt-2 w-full px-3 py-2 bg-nova-red/20 border border-nova-red/50 rounded-lg
+                               text-nova-red text-xs font-bold hover:bg-nova-red hover:text-white
+                               transition-all duration-300"
+                    >
+                      🔓 Liberar Caso
+                    </button>
                   </div>
                 )}
               </div>
