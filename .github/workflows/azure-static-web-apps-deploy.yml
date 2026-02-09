@@ -28,17 +28,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Debug - Check if secret exists
-        run: |
-          if [ -n "${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}" ]; then
-            echo "✅ Secret AZURE_STATIC_WEB_APPS_API_TOKEN exists and has a value"
-            echo "Token length: ${#TOKEN}"
-          else
-            echo "❌ Secret AZURE_STATIC_WEB_APPS_API_TOKEN is EMPTY or NOT SET"
-          fi
-        env:
-          TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-
       - name: Build application
         run: npm run build
         env:
