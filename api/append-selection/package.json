@@ -1,0 +1,6 @@
+{
+  "name": "append-selection",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "description": "Azure Function: append selections to CSV blob storage"
+}

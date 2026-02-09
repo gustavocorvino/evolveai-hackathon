@@ -1,0 +1,69 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/images/*",
+      "/css/*",
+      "/js/*",
+      "/fonts/*",
+      "/*.json",
+      "/*.txt",
+      "/*.ico",
+      "/*.svg"
+    ]
+  },
+  "mimeTypes": {
+    ".json": "text/json",
+    ".wasm": "application/wasm"
+  },
+  "auth": {
+    "rolesSource": "/api/auth/me",
+    "identityProviders": {
+      "azureActiveDirectory": {
+        "registration": {
+          "openIdIssuer": "https://login.microsoftonline.com/common/v2.0",
+          "clientIdSettingName": "AZURE_CLIENT_ID",
+          "clientSecretSettingName": "AZURE_CLIENT_SECRET"
+        }
+      }
+    }
+  },
+  "responseOverrides": {
+    "400": {
+      "rewrite": "/404.html",
+      "statusCode": 400
+    },
+    "404": {
+      "rewrite": "/404.html",
+      "statusCode": 404
+    },
+    "403": {
+      "rewrite": "/403.html",
+      "statusCode": 403
+    },
+    "500": {
+      "rewrite": "/500.html",
+      "statusCode": 500
+    }
+  },
+  "routes": [
+    {
+      "route": "/admin/*",
+      "allowedRoles": ["admin"],
+      "statusCode": 403
+    },
+    {
+      "route": "/*",
+      "serve": "/index.html",
+      "statusCode": 200
+    }
+  ],
+  "globalHeaders": {
+    "X-Frame-Options": "DENY",
+    "X-Content-Type-Options": "nosniff",
+    "X-XSS-Protection": "1; mode=block",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "trailingSlash": "auto"
+}

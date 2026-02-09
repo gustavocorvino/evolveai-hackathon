@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================
+    // TEAMS COLLECTION - Dados privados da equipe
+    // ============================================
+    match /teams/{teamId} {
+      // Cada equipe só pode ler/escrever seus próprios dados
+      allow read, write: if request.auth != null && request.auth.uid == teamId;
+      
+      // Criar novo documento (signup)
+      allow create: if request.auth != null && request.auth.uid == resource.id;
+    }
+    
+    // ============================================
+    // USE CASES COLLECTION - Público para leitura
+    // ============================================
+    match /useCases/{useCaseId} {
+      // Todos podem ler casos de uso disponíveis
+      allow read: if request.resource == null || request.resource.data.isAvailable == true;
+      
+      // Apenas admin pode criar/atualizar/deletar
+      allow write: if hasAdminRole();
+    }
+    
+    // ============================================
+    // SELECTIONS COLLECTION - Votação de equipes
+    // ============================================
+    match /selections/{selectionId} {
+      // Equipe só pode ler suas próprias seleções
+      allow read: if request.auth != null && request.auth.uid == resource.data.teamId;
+      
+      // Equipe só pode criar sua própria seleção
+      allow create: if request.auth != null && 
+                       request.auth.uid == request.resource.data.teamId &&
+                       isValidSelection();
+      
+      // Não permitir update/delete de seleções
+      allow update, delete: if false;
+    }
+    
+    // ============================================
+    // ADMIN COLLECTION - Configurações do sistema
+    // ============================================
+    match /admin/{document=**} {
+      allow read, write: if hasAdminRole();
+    }
+    
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    
+    // Verifica se o usuário tem role de admin
+    function hasAdminRole() {
+      return request.auth != null && 
+             get(/databases/$(database)/documents/teams/$(request.auth.uid)).data.isAdmin == true;
+    }
+    
+    // Valida estrutura de uma seleção
+    function isValidSelection() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['teamId', 'useCaseId', 'selectedAt']) &&
+             data.teamId is string &&
+             data.useCaseId is string &&
+             data.selectedAt is timestamp;
+    }
+    
+    // Rate limiting: máximo 10 escritas por minuto por usuário
+    function isWithinRateLimit() {
+      let userWrites = firestore.query('events')
+        .where('userId', '==', request.auth.uid)
+        .where('timestamp', '>', now.getTime() - 60000)
+        .size() < 10;
+      return userWrites;
+    }
+  }
+}

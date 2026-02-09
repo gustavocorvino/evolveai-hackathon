@@ -1,27 +1,21 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
-// Firebase configuration
-// IMPORTANTE: Substitua pelos valores REAIS do Firebase Console
-// 
-// 📋 PASSO A PASSO PARA OBTER AS CREDENCIAIS:
-// 1. Acesse: https://console.firebase.google.com
-// 2. Clique no seu projeto (ou crie um novo)
-// 3. Vá em "Configurações do Projeto" (ícone engrenagem no canto superior esquerdo)
-// 4. Role até a seção "Seus apps"
-// 5. Clique no ícone "</>" (Web)
-// 6. Registre o app com nome "EvolveAI Hackathon"
-// 7. COPIE o objeto firebaseConfig que aparece
-// 8. COLE AQUI substituindo os valores abaixo
+// Firebase configuration - using environment variables for security
+// IMPORTANTE: Configure as variáveis de ambiente em:
+// - Desenvolvimento: arquivo .env.local
+// - Produção: GitHub Secrets (para Azure Static Web Apps)
+// - Build: Vite automaticamente injeta as variáveis
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBbXZMlarLWvw9dsbutTlBloesq_gkprxs",
-  authDomain: "evolveai-hackathon.firebaseapp.com",
-  projectId: "evolveai-hackathon",
-  storageBucket: "evolveai-hackathon.firebasestorage.app",
-  messagingSenderId: "806986913757",
-  appId: "1:806986913757:web:f0013fef6fa0c83f2c0834"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 // Verificar se Firebase está configurado
@@ -159,6 +153,26 @@ try {
   app = initializeApp(firebaseConfig);
   db = getFirestore(app);
   auth = getAuth(app);
+  
+  // Initialize App Check with reCAPTCHA v3
+  // This protects your Firebase resources from abuse
+  if (import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY) {
+    try {
+      initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider(
+          import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY
+        ),
+        isTokenAutoRefreshEnabled: true
+      });
+      console.log('✅ App Check (reCAPTCHA v3) inicializado!');
+    } catch (appCheckError) {
+      console.warn('⚠️ App Check initialization failed:', appCheckError.message);
+      console.warn('This is normal in development. Make sure reCAPTCHA is configured in Firebase Console.');
+    }
+  } else {
+    console.warn('⚠️ VITE_FIREBASE_RECAPTCHA_SITE_KEY não configurado. App Check não ativo.');
+    console.warn('Para production: registre App Check em Firebase Console → Authentication → App Check');
+  }
   
   if (isConfigured) {
     console.log('✅ Firebase inicializado com sucesso!');

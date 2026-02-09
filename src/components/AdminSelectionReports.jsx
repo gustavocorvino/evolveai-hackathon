@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRealtimeUseCases } from '../hooks/useRealtimeUseCases';
+import { fetchSelections, getSelectionsDownloadUrl } from '../services/selectionStorage.service';
 
 const categoryOptions = [
   { value: 'Industria', label: '🏭 Indústria', color: 'neon-cyan' },
@@ -89,6 +90,23 @@ const AdminSelectionReports = () => {
     document.body.removeChild(link);
   };
 
+  // Load selections from blob storage (serverless)
+  const [blobSelections, setBlobSelections] = useState(null);
+  const [loadingBlob, setLoadingBlob] = useState(false);
+
+  const loadBlobSelections = async () => {
+    setLoadingBlob(true);
+    try {
+      const data = await fetchSelections();
+      setBlobSelections(data);
+    } catch (err) {
+      console.error('Failed to load selections from blob', err);
+      alert('Falha ao carregar seleções. Veja console para detalhes.');
+    } finally {
+      setLoadingBlob(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -137,6 +155,40 @@ const AdminSelectionReports = () => {
               </p>
             </div>
           </div>
+
+          {/* Blob selections viewer */}
+          {blobSelections && (
+            <div className="mt-6 bg-neutral-dark/40 border-2 border-neon-cyan/20 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-display text-lg font-bold text-neon-cyan">☁️ Seleções (Blob)</h3>
+                <button onClick={() => setBlobSelections(null)} className="text-sm text-neutral-light/60">Fechar</button>
+              </div>
+              <div className="overflow-x-auto max-h-64">
+                <table className="w-full text-sm">
+                  <thead className="text-neutral-light/80 text-xs">
+                    <tr>
+                      <th className="px-3 py-2 text-left">Timestamp</th>
+                      <th className="px-3 py-2 text-left">Nome</th>
+                      <th className="px-3 py-2 text-left">Email</th>
+                      <th className="px-3 py-2 text-left">SelectionId</th>
+                      <th className="px-3 py-2 text-left">Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {blobSelections.map((s, idx) => (
+                      <tr key={idx} className="border-t border-neutral-light/10">
+                        <td className="px-3 py-2">{s.timestamp}</td>
+                        <td className="px-3 py-2">{s.name}</td>
+                        <td className="px-3 py-2">{s.email}</td>
+                        <td className="px-3 py-2">{s.selectionId}</td>
+                        <td className="px-3 py-2">{s.details}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* Industry Stats Table */}
           <div className="bg-neutral-dark/50 backdrop-blur-lg border-2 border-neon-cyan/30 rounded-xl overflow-hidden">
@@ -238,6 +290,7 @@ const AdminSelectionReports = () => {
                 Total de {selectedCases.length} casos selecionados por equipes
               </p>
                 </div>
+            <div className="flex gap-2">
             <button
               onClick={handleExportCSV}
               disabled={selectedCases.length === 0}
@@ -249,6 +302,19 @@ const AdminSelectionReports = () => {
             >
               📥 Exportar CSV
             </button>
+            <button
+              onClick={loadBlobSelections}
+              className="px-6 py-3 bg-gradient-to-r from-neon-cyan to-cosmic-purple text-white font-display font-bold rounded-lg hover:shadow-glow-cyan transition-all duration-300"
+            >
+              ☁️ Carregar Seleções (Blob)
+            </button>
+            <a
+              href={getSelectionsDownloadUrl()}
+              className="px-6 py-3 bg-neutral-dark/30 text-neutral-light rounded-lg font-medium hover:bg-neutral-dark transition-all"
+            >
+              ⬇️ Baixar CSV
+            </a>
+            </div>
               </div>
 
           {/* Category Stats */}

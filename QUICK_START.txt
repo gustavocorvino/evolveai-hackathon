@@ -1,0 +1,99 @@
+MIGRAÇÃO AZURE STATIC WEB APPS - QUICK START
+=============================================
+
+📌 LEIA PRIMEIRO:
+   1. WORK_SUMMARY.md (visão geral)
+   2. AZURE_MIGRATION_README.md (resumo executivo)
+
+🚀 COMEÇAR AGORA (5 minutos):
+   1. node setup-azure.js
+   2. Preencher credenciais Firebase
+   3. Verificar que .env.local foi criado
+
+✅ TESTAR LOCALMENTE (5 minutos):
+   1. npm install
+   2. npm run dev
+   3. Verificar que app roda em http://localhost:5173
+
+🔐 GITHUB SECRETS (10 minutos):
+   1. Ir para: https://github.com/seu-usuario/seu-repo/settings/secrets/actions
+   2. Clique "New repository secret" 6 vezes
+   3. Crie secrets com nomes (EXATO):
+      - VITE_FIREBASE_API_KEY
+      - VITE_FIREBASE_AUTH_DOMAIN
+      - VITE_FIREBASE_PROJECT_ID
+      - VITE_FIREBASE_STORAGE_BUCKET
+      - VITE_FIREBASE_MESSAGING_SENDER_ID
+      - VITE_FIREBASE_APP_ID
+   4. Valores: copie de .env.local
+
+🌐 AZURE SETUP (10 minutos):
+   1. az login
+   2. az group create --name evolveai-rg --location eastus
+   3. az staticwebapp create \
+        --name evolveai-hackathon-swa \
+        --resource-group evolveai-rg \
+        --source https://github.com/seu-usuario/seu-repo \
+        --location eastus \
+        --branch main \
+        --app-location "src" \
+        --output-location "dist" \
+        --token SEU_GITHUB_TOKEN
+
+📤 DEPLOY (automático):
+   1. git add .
+   2. git commit -m "feat: migração para Azure Static Web Apps"
+   3. git push origin main
+   4. Monitor em: https://github.com/seu-usuario/seu-repo/actions
+
+✨ VALIDAR (5 minutos):
+   1. Aguarde deployment concluir (~5 min)
+   2. Acessar https://seu-app.azurestaticapps.com
+   3. Testar login e funcionalidades
+   4. Verificar console se há erros
+
+📚 DOCUMENTAÇÃO DETALHADA:
+   - AZURE_MIGRATION_PLAN.md       (Arquitetura)
+   - AZURE_DEPLOYMENT_GUIDE.md     (Passo-a-passo)
+   - SECURITY_FIXES.md             (Segurança)
+   - AZURE_MIGRATION_README.md     (Resumo)
+
+🆘 SE ALGO ERRAR:
+   1. Verificar logs: GitHub Actions → workflow
+   2. Testar localmente: npm run build && npm run preview
+   3. Confirmar secrets: gh secret list
+   4. Ver logs Azure: az staticwebapp logs --name evolveai-hackathon-swa
+
+📊 ARQUIVOS CRIADOS:
+   ✅ .env.example
+   ✅ staticwebapp.config.json
+   ✅ firestore.rules
+   ✅ setup-azure.js
+   ✅ .github/workflows/azure-static-web-apps-deploy.yml
+   ✅ src/firebase/config.js (ATUALIZADO)
+   ✅ .gitignore (ATUALIZADO)
+
+🎯 TEMPO TOTAL: ~45 minutos
+   Setup local: 5 min
+   GitHub Secrets: 10 min
+   Azure Setup: 10 min
+   Deploy & Validação: 20 min
+
+✅ PÓS-DEPLOY:
+   - Testar responsivo (mobile/tablet)
+   - Verificar Lighthouse (npm install -g @lhci/cli@latest)
+   - Configurar domínio customizado (opcional)
+   - Ativar monitoring com Application Insights
+
+PRÓXIMAS MELHORIAS:
+   - Week 1: Deploy + validação
+   - Week 2: Custom domain + SSL
+   - Week 3: Application Insights
+   - Week 4: Firebase Custom Claims para admin
+   - Week 5: Firestore backup automático
+
+═══════════════════════════════════════════════════════════════════
+Criado: 06/02/2026
+Status: ✅ PRONTO PARA MIGRAÇÃO
+Próximo passo: node setup-azure.js
+═══════════════════════════════════════════════════════════════════

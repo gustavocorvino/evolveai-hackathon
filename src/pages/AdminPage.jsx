@@ -1,37 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import AdminUseCaseManager from '../components/AdminUseCaseManager';
 import AdminSelectionReports from '../components/AdminSelectionReports';
-import { signInAnonymously } from 'firebase/auth';
 import { auth } from '../firebase/config';
 
 const AdminPage = () => {
   const [authenticated, setAuthenticated] = useState(false);
-  const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('usecases'); // 'usecases' or 'reports'
-  
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    
-    // Simple admin authentication (for hackathon purposes)
-    // In production, use Firebase Admin SDK or custom claims
-    if (credentials.username === 'admin' && credentials.password === 'evolveai2026') {
-      try {
-        // Autenticar anonimamente no Firebase para ter permissões
-        await signInAnonymously(auth);
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, []);
+
+  const checkAdminStatus = async () => {
+    try {
+      setIsChecking(true);
+      const user = auth.currentUser;
+
+      if (!user) {
+        setIsChecking(false);
+        return;
+      }
+
+      // Refresh token to get latest claims
+      const idTokenResult = await user.getIdTokenResult(true);
+      
+      if (idTokenResult.claims?.admin === true) {
         setAuthenticated(true);
         setError('');
-      } catch (err) {
-        console.error('Firebase auth error:', err);
-        setError('Erro ao autenticar no Firebase');
+      } else {
+        setError('Você não tem permissão de administrador.');
       }
-    } else {
-      setError('Credenciais inválidas');
+    } catch (err) {
+      console.error('Admin auth check error:', err);
+      setError('Erro ao verificar permissões de admin.');
+    } finally {
+      setIsChecking(false);
     }
   };
   
   if (!authenticated) {
+    if (isChecking) {
+      return (
+        <div className="min-h-screen flex items-center justify-center px-4">
+          <motion.div
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-center"
+          >
+            <div className="text-5xl mb-4">⏳</div>
+            <p className="text-neutral-light">Verificando permissões de administrador...</p>
+          </motion.div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <motion.div
@@ -39,73 +64,32 @@ const AdminPage = () => {
           animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md"
         >
-          <div className="bg-neutral-dark/50 backdrop-blur-lg border-2 border-neon-cyan/30 rounded-2xl p-8 shadow-glow-cyan">
+          <div className="bg-neutral-dark/50 backdrop-blur-lg border-2 border-nova-red/30 rounded-2xl p-8 shadow-glow-cyan">
             <div className="text-center mb-6">
-              <div className="text-5xl mb-4">🔐</div>
-              <h2 className="font-display text-3xl font-bold text-neon-cyan mb-2">
-                Área Administrativa
+              <div className="text-5xl mb-4">🔒</div>
+              <h2 className="font-display text-3xl font-bold text-nova-red mb-2">
+                Acesso Restrito
               </h2>
               <p className="text-neutral-light text-sm">
-                Acesso restrito aos organizadores
+                Esta área é restrita a administradores. Por favor, faça login com sua conta corporativa.
               </p>
             </div>
             
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-neutral-light mb-2">
-                  Usuário
-                </label>
-                <input
-                  type="text"
-                  value={credentials.username}
-                  onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
-                  className="w-full px-4 py-3 bg-deep-space border-2 border-neon-cyan/30 rounded-lg 
-                           text-neutral-light focus:border-neon-cyan focus:ring-2 focus:ring-neon-cyan/20 
-                           transition-all outline-none"
-                  required
-                />
+            {error && (
+              <div className="p-3 bg-nova-red/10 border-2 border-nova-red/50 rounded-lg mb-4">
+                <p className="text-nova-red text-sm">{error}</p>
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-neutral-light mb-2">
-                  Senha
-                </label>
-                <input
-                  type="password"
-                  value={credentials.password}
-                  onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-                  className="w-full px-4 py-3 bg-deep-space border-2 border-neon-cyan/30 rounded-lg 
-                           text-neutral-light focus:border-neon-cyan focus:ring-2 focus:ring-neon-cyan/20 
-                           transition-all outline-none"
-                  required
-                />
-              </div>
-              
-              {error && (
-                <div className="p-3 bg-nova-red/10 border-2 border-nova-red/50 rounded-lg">
-                  <p className="text-nova-red text-sm">{error}</p>
-                </div>
-              )}
-              
-              <button
-                type="submit"
-                className="w-full py-3 px-6 bg-gradient-to-r from-neon-cyan to-cosmic-purple 
-                         text-white font-display font-bold rounded-lg
-                         hover:shadow-glow-cyan transform hover:scale-105 
-                         transition-all duration-300"
-              >
-                🚀 Entrar
-              </button>
-            </form>
+            )}
             
-            <div className="mt-6 text-center">
-              <a 
-                href="/" 
-                className="text-neutral-light/50 hover:text-neon-cyan text-sm transition-colors"
-              >
-                ← Voltar para área pública
-              </a>
-            </div>
+            <a
+              href="/"
+              className="block w-full py-3 px-6 bg-gradient-to-r from-neon-cyan to-cosmic-purple 
+                       text-white font-display font-bold rounded-lg text-center
+                       hover:shadow-glow-cyan transform hover:scale-105 
+                       transition-all duration-300"
+            >
+              ← Voltar para Área Pública
+            </a>
           </div>
         </motion.div>
       </div>

@@ -1,0 +1,22 @@
+Security: Add App Check initialization with reCAPTCHA v3
+
+**Changes:**
+- Add App Check provider with ReCaptchaV3Provider to firebase/config.js
+- Add VITE_FIREBASE_RECAPTCHA_SITE_KEY environment variable support
+- Add graceful fallback when reCAPTCHA site key is not configured
+- Update .env.example with new App Check configuration
+
+**Why:**
+- App Check protects Firebase resources from abuse and unauthorized access
+- reCAPTCHA v3 validates legitimate client requests without user friction
+- Environment variable approach keeps secrets out of source code
+
+**Related:**
+- Blocks unauthorized API key usage
+- Reduces risk of quota exhaustion from external attackers
+- Complements Custom Claims admin authentication
+
+**Testing:**
+- Local: npm run build (verify no errors)
+- Local: npm run preview (verify reCAPTCHA badge visible)
+- Production: Verify Azure deployment with reCAPTCHA active
