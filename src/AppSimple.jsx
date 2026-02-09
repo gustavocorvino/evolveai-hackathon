@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import LandingPageSimple from './pages/LandingPageSimple';
 import GalleryPageSimple from './pages/GalleryPageSimple';
 import SuccessPageSimple from './pages/SuccessPageSimple';
+import AdminPageSimple from './pages/AdminPageSimple';
 
 // Components
 import LoadingScreen from './components/LoadingScreen';
@@ -45,6 +46,9 @@ function AppRoutes() {
               : <Navigate to="/gallery" replace />
           } 
         />
+        
+        {/* Admin - acesso livre para visualização */}
+        <Route path="/admin" element={<AdminPageSimple />} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
