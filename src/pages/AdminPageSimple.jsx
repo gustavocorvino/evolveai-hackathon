@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useStaticUseCases } from '../hooks/useStaticUseCases';
+import { 
+  saveUseCases, 
+  parseCSVToUseCases, 
+  generateCSVExport,
+  clearSelections 
+} from '../services/data.service';
 
 const AdminPageSimple = () => {
-  const { selections } = useAuth();
-  const { useCases, loading } = useStaticUseCases();
+  const { selections, refreshSelections } = useAuth();
+  const { useCases, loading, refreshUseCases } = useStaticUseCases();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [modalUseCase, setModalUseCase] = useState(null);
+  
+  // Estados para upload CSV
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadPreview, setUploadPreview] = useState(null);
+  const [uploadError, setUploadError] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(null);
+  const fileInputRef = useRef(null);
 
   // Adiciona info de seleção aos use cases
   const useCasesWithSelection = useCases.map(uc => ({
@@ -36,40 +50,122 @@ const AdminPageSimple = () => {
 
   // Exportar CSV
   const handleExportCSV = () => {
-    const headers = ['Caso de Uso', 'Categoria', 'Status', 'Equipe', 'Email', 'Data/Hora Seleção'];
-    
-    const rows = useCasesWithSelection.map(uc => {
-      if (uc.isSelected) {
-        return [
-          uc.title,
-          uc.category,
-          'Selecionado',
-          uc.selectedBy?.teamName || '',
-          uc.selectedBy?.email || '',
-          uc.selectedBy?.timestamp ? new Date(uc.selectedBy.timestamp).toLocaleString('pt-BR') : ''
-        ];
-      } else {
-        return [
-          uc.title,
-          uc.category,
-          'Disponível',
-          '',
-          '',
-          ''
-        ];
-      }
-    });
-
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-    ].join('\n');
+    const csvContent = generateCSVExport(useCases, selections);
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
     link.setAttribute('download', `hackathon_selecoes_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Upload CSV - Handler de arquivo
+  const handleFileChange = useCallback((event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadError(null);
+    setUploadPreview(null);
+    setUploadSuccess(null);
+
+    if (!file.name.endsWith('.csv')) {
+      setUploadError('Por favor, selecione um arquivo CSV');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const csvContent = e.target?.result;
+        const parsedUseCases = parseCSVToUseCases(csvContent);
+        
+        if (parsedUseCases.length === 0) {
+          setUploadError('Nenhum caso de uso encontrado no CSV');
+          return;
+        }
+
+        setUploadPreview({
+          fileName: file.name,
+          useCases: parsedUseCases,
+          csvContent
+        });
+      } catch (err) {
+        setUploadError(err.message || 'Erro ao processar CSV');
+      }
+    };
+    reader.onerror = () => {
+      setUploadError('Erro ao ler arquivo');
+    };
+    reader.readAsText(file);
+  }, []);
+
+  // Confirmar upload
+  const handleConfirmUpload = async () => {
+    if (!uploadPreview?.useCases) return;
+
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      const result = await saveUseCases(uploadPreview.useCases);
+      
+      setUploadSuccess({
+        count: uploadPreview.useCases.length,
+        source: result.source,
+        message: result.message
+      });
+      
+      // Atualizar lista de use cases
+      if (typeof refreshUseCases === 'function') {
+        await refreshUseCases();
+      }
+      
+      // Limpar preview após sucesso
+      setTimeout(() => {
+        setUploadPreview(null);
+        setShowUploadModal(false);
+        setUploadSuccess(null);
+      }, 2000);
+      
+    } catch (err) {
+      setUploadError(err.message || 'Erro ao salvar casos de uso');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Limpar seleções
+  const handleClearSelections = async () => {
+    if (!window.confirm('⚠️ Tem certeza que deseja limpar TODAS as seleções? Esta ação não pode ser desfeita.')) {
+      return;
+    }
+
+    try {
+      await clearSelections();
+      if (typeof refreshSelections === 'function') {
+        refreshSelections();
+      }
+      window.location.reload();
+    } catch (err) {
+      alert('Erro ao limpar seleções: ' + err.message);
+    }
+  };
+
+  // Download template CSV
+  const handleDownloadTemplate = () => {
+    const template = `titulo;categoria;descricao;detalhes
+"Exemplo de Caso 1";"Industria";"Descrição do primeiro caso de uso";"Detalhes adicionais aqui"
+"Exemplo de Caso 2";"Praticas";"Descrição do segundo caso de uso";"Mais informações"
+"Exemplo de Caso 3";"Cases";"Descrição do terceiro caso de uso";""`;
+
+    const blob = new Blob([template], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'template_casos_uso.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -98,14 +194,37 @@ const AdminPageSimple = () => {
               </p>
             </div>
             
-            <button
-              onClick={handleExportCSV}
-              className="px-6 py-3 bg-gradient-to-r from-shield-green to-neon-cyan rounded-lg
-                       font-bold text-white hover:shadow-glow-cyan
-                       transition-all duration-300 flex items-center gap-2"
-            >
-              📥 Exportar CSV
-            </button>
+            <div className="flex gap-3">
+              {/* Upload CSV */}
+              <button
+                onClick={() => setShowUploadModal(true)}
+                className="px-4 py-3 bg-gradient-to-r from-cosmic-purple to-neon-cyan rounded-lg
+                         font-bold text-white hover:shadow-glow-cyan
+                         transition-all duration-300 flex items-center gap-2"
+              >
+                📤 Importar CSV
+              </button>
+
+              {/* Exportar CSV */}
+              <button
+                onClick={handleExportCSV}
+                className="px-4 py-3 bg-gradient-to-r from-shield-green to-neon-cyan rounded-lg
+                         font-bold text-white hover:shadow-glow-cyan
+                         transition-all duration-300 flex items-center gap-2"
+              >
+                📥 Exportar CSV
+              </button>
+
+              {/* Limpar Seleções */}
+              <button
+                onClick={handleClearSelections}
+                className="px-4 py-3 bg-gradient-to-r from-solar-orange to-alert-red rounded-lg
+                         font-bold text-white hover:opacity-90
+                         transition-all duration-300 flex items-center gap-2"
+              >
+                🗑️ Limpar Seleções
+              </button>
+            </div>
           </div>
 
           {/* Stats */}
@@ -308,6 +427,208 @@ const AdminPageSimple = () => {
                   </p>
                 </div>
               )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal de Upload CSV */}
+      <AnimatePresence>
+        {showUploadModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+            onClick={() => {
+              if (!isUploading) {
+                setShowUploadModal(false);
+                setUploadPreview(null);
+                setUploadError(null);
+              }
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-neutral-dark border-2 border-cosmic-purple/50 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="font-display text-xl font-bold text-neon-cyan flex items-center gap-2">
+                  📤 Importar Casos de Uso via CSV
+                </h2>
+                <button
+                  onClick={() => {
+                    if (!isUploading) {
+                      setShowUploadModal(false);
+                      setUploadPreview(null);
+                      setUploadError(null);
+                    }
+                  }}
+                  className="text-neutral-light hover:text-white text-xl"
+                  disabled={isUploading}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Instruções */}
+              <div className="mb-6 p-4 bg-deep-space/50 border border-neon-cyan/30 rounded-xl">
+                <h3 className="font-bold text-neon-cyan mb-2">📋 Formato do CSV</h3>
+                <p className="text-neutral-light text-sm mb-2">
+                  O CSV deve conter as colunas (separador: vírgula ou ponto-e-vírgula):
+                </p>
+                <ul className="text-neutral-light/70 text-sm list-disc list-inside space-y-1">
+                  <li><strong>titulo</strong> ou <strong>title</strong> (obrigatório) - Nome do caso</li>
+                  <li><strong>categoria</strong> ou <strong>category</strong> - Industria, Praticas ou Cases</li>
+                  <li><strong>descricao</strong> ou <strong>description</strong> - Descrição breve</li>
+                  <li><strong>detalhes</strong> ou <strong>details</strong> - Informações adicionais</li>
+                </ul>
+                <button
+                  onClick={handleDownloadTemplate}
+                  className="mt-3 text-cosmic-purple hover:text-neon-cyan underline text-sm"
+                >
+                  ⬇️ Baixar template de exemplo
+                </button>
+              </div>
+
+              {/* Área de Upload */}
+              <div className="mb-6">
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  className="hidden"
+                />
+                
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-cosmic-purple/50 rounded-xl p-8 text-center
+                           cursor-pointer hover:border-neon-cyan hover:bg-neon-cyan/5
+                           transition-all duration-300"
+                >
+                  <div className="text-4xl mb-3">📁</div>
+                  <p className="text-neutral-light font-semibold">
+                    Clique para selecionar arquivo CSV
+                  </p>
+                  <p className="text-neutral-light/50 text-sm mt-1">
+                    ou arraste e solte aqui
+                  </p>
+                </div>
+              </div>
+
+              {/* Erro */}
+              {uploadError && (
+                <div className="mb-6 p-4 bg-alert-red/20 border border-alert-red rounded-xl">
+                  <p className="text-alert-red font-semibold">❌ {uploadError}</p>
+                </div>
+              )}
+
+              {/* Sucesso */}
+              {uploadSuccess && (
+                <div className="mb-6 p-4 bg-shield-green/20 border border-shield-green rounded-xl">
+                  <p className="text-shield-green font-semibold">
+                    ✅ {uploadSuccess.count} casos de uso importados com sucesso!
+                  </p>
+                  {uploadSuccess.source === 'local' && (
+                    <p className="text-shield-green/70 text-sm mt-1">
+                      ⚠️ {uploadSuccess.message}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Preview */}
+              {uploadPreview && !uploadSuccess && (
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-bold text-neon-cyan">
+                      📄 Preview: {uploadPreview.fileName}
+                    </h3>
+                    <span className="text-shield-green font-semibold">
+                      {uploadPreview.useCases.length} casos encontrados
+                    </span>
+                  </div>
+                  
+                  <div className="max-h-60 overflow-y-auto border border-neutral-light/20 rounded-lg">
+                    <table className="w-full text-sm">
+                      <thead className="bg-deep-space sticky top-0">
+                        <tr>
+                          <th className="text-left p-2 text-neon-cyan">ID</th>
+                          <th className="text-left p-2 text-neon-cyan">Título</th>
+                          <th className="text-left p-2 text-neon-cyan">Categoria</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {uploadPreview.useCases.slice(0, 10).map((uc, idx) => (
+                          <tr key={idx} className="border-t border-neutral-light/10">
+                            <td className="p-2 text-neutral-light/70">{uc.id}</td>
+                            <td className="p-2 text-neutral-light">{uc.title}</td>
+                            <td className="p-2 text-cosmic-purple">{uc.category}</td>
+                          </tr>
+                        ))}
+                        {uploadPreview.useCases.length > 10 && (
+                          <tr className="border-t border-neutral-light/10">
+                            <td colSpan={3} className="p-2 text-center text-neutral-light/50">
+                              ... e mais {uploadPreview.useCases.length - 10} casos
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Aviso */}
+                  <div className="mt-4 p-3 bg-solar-orange/20 border border-solar-orange/50 rounded-lg">
+                    <p className="text-solar-orange text-sm">
+                      ⚠️ <strong>Atenção:</strong> Esta operação substituirá TODOS os casos de uso existentes.
+                      As seleções serão perdidas se os IDs mudarem.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Botões de Ação */}
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => {
+                    setShowUploadModal(false);
+                    setUploadPreview(null);
+                    setUploadError(null);
+                  }}
+                  disabled={isUploading}
+                  className="px-6 py-3 bg-neutral-dark border border-neutral-light/30 rounded-lg
+                           text-neutral-light hover:border-neutral-light
+                           transition-all duration-300 disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+                
+                {uploadPreview && !uploadSuccess && (
+                  <button
+                    onClick={handleConfirmUpload}
+                    disabled={isUploading}
+                    className="px-6 py-3 bg-gradient-to-r from-shield-green to-neon-cyan rounded-lg
+                             font-bold text-white hover:shadow-glow-cyan
+                             transition-all duration-300 disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {isUploading ? (
+                      <>
+                        <span className="animate-spin">⏳</span>
+                        Importando...
+                      </>
+                    ) : (
+                      <>
+                        ✅ Confirmar Importação
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
             </motion.div>
           </motion.div>
         )}

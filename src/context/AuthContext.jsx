@@ -1,4 +1,5 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, useEffect, createContext, useContext, useCallback } from 'react';
+import { fetchSelections as fetchSelectionsFromAPI, saveSelection as saveSelectionToAPI } from '../services/data.service';
 
 const STORAGE_KEY = 'hackathon_team_data';
 const SELECTIONS_KEY = 'hackathon_selections';
@@ -17,29 +18,47 @@ export function AuthProvider({ children }) {
 
   // Carrega dados salvos
   useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    const savedSelections = localStorage.getItem(SELECTIONS_KEY);
-    
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        setUser({ uid: parsed.id, email: parsed.email });
-        setTeamData(parsed);
-      } catch (e) {
-        console.error('Erro ao carregar dados:', e);
-        localStorage.removeItem(STORAGE_KEY);
+    const loadData = async () => {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          setUser({ uid: parsed.id, email: parsed.email });
+          setTeamData(parsed);
+        } catch (e) {
+          console.error('Erro ao carregar dados:', e);
+          localStorage.removeItem(STORAGE_KEY);
+        }
       }
-    }
-    
-    if (savedSelections) {
+      
+      // Tenta carregar seleções da API
       try {
-        setSelections(JSON.parse(savedSelections));
+        const result = await fetchSelectionsFromAPI();
+        setSelections(result.selections);
       } catch (e) {
         console.error('Erro ao carregar seleções:', e);
+        // Fallback para localStorage
+        const savedSelections = localStorage.getItem(SELECTIONS_KEY);
+        if (savedSelections) {
+          setSelections(JSON.parse(savedSelections));
+        }
       }
+      
+      setLoading(false);
+    };
+
+    loadData();
+  }, []);
+
+  // Função para refresh de seleções
+  const refreshSelections = useCallback(async () => {
+    try {
+      const result = await fetchSelectionsFromAPI();
+      setSelections(result.selections);
+    } catch (e) {
+      console.error('Erro ao atualizar seleções:', e);
     }
-    
-    setLoading(false);
   }, []);
 
   const login = (teamName, email) => {
@@ -65,7 +84,7 @@ export function AuthProvider({ children }) {
     setTeamData(null);
   };
 
-  const selectUseCase = (useCaseId, useCaseTitle) => {
+  const selectUseCase = async (useCaseId, useCaseTitle) => {
     if (!teamData) return false;
     
     // Verifica se já foi selecionado por outro grupo
@@ -73,16 +92,30 @@ export function AuthProvider({ children }) {
       return false;
     }
     
-    // Atualiza seleções globais
+    const selectionData = {
+      useCaseId,
+      teamId: teamData.id,
+      teamName: teamData.name,
+      email: teamData.email,
+      useCaseTitle,
+      timestamp: new Date().toISOString()
+    };
+
+    // Tenta salvar na API primeiro
+    try {
+      await saveSelectionToAPI(selectionData);
+    } catch (err) {
+      console.error('Erro ao salvar seleção:', err);
+      // Se já selecionado, retorna false
+      if (err.message.includes('já selecionado')) {
+        return false;
+      }
+    }
+    
+    // Atualiza seleções locais
     const newSelections = {
       ...selections,
-      [useCaseId]: {
-        teamId: teamData.id,
-        teamName: teamData.name,
-        email: teamData.email,
-        useCaseTitle,
-        timestamp: new Date().toISOString()
-      }
+      [useCaseId]: selectionData
     };
     setSelections(newSelections);
     localStorage.setItem(SELECTIONS_KEY, JSON.stringify(newSelections));
@@ -95,9 +128,6 @@ export function AuthProvider({ children }) {
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
     setTeamData(updatedData);
-    
-    // Tenta enviar para API (não bloqueia se falhar)
-    submitToAPI(newSelections[useCaseId]).catch(console.error);
     
     return true;
   };
@@ -126,6 +156,7 @@ export function AuthProvider({ children }) {
       getUseCaseSelection,
       hasTeamSelected,
       selections,
+      refreshSelections,
       isAuthenticated: !!user
     }}>
       {children}
@@ -144,28 +175,3 @@ export function useAuth() {
   return context;
 }
 
-/**
- * Tenta enviar seleção para API (opcional)
- */
-async function submitToAPI(selectionData) {
-  try {
-    const response = await fetch('/api/append-selection', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        timestamp: selectionData.timestamp,
-        userId: selectionData.teamId,
-        name: selectionData.teamName,
-        email: selectionData.email,
-        selectionId: selectionData.useCaseId,
-        details: selectionData.useCaseTitle
-      })
-    });
-    
-    if (!response.ok) {
-      console.warn('API não configurada ou indisponível');
-    }
-  } catch (error) {
-    console.warn('Não foi possível enviar para API:', error.message);
-  }
-}
