@@ -1,21 +1,29 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { registerTeam, loginTeam } from '../services/auth.service';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const LandingPage = () => {
-  const [isLogin, setIsLogin] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
   const validateEmail = (email) => {
     // Validação silenciosa - só aceita @avanade.com
-    return email.toLowerCase().endsWith('@avanade.com');
+    return email.toLowerCase().trim().endsWith('@avanade.com');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    // Validar nome
+    if (!formData.name.trim() || formData.name.trim().length < 3) {
+      setError('Nome da equipe deve ter pelo menos 3 caracteres');
+      return;
+    }
     
     // Validar email sem expor a regra
     if (!validateEmail(formData.email)) {
@@ -26,14 +34,10 @@ const LandingPage = () => {
     setLoading(true);
     
     try {
-      if (isLogin) {
-        await loginTeam(formData.name, formData.email);
-      } else {
-        await registerTeam(formData.name, formData.email);
-      }
-      // Auth hook will handle redirect
+      login(formData.name.trim(), formData.email.trim().toLowerCase());
+      navigate('/gallery');
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Erro ao entrar');
       setLoading(false);
     }
   };
@@ -79,12 +83,10 @@ const LandingPage = () => {
           <div className="bg-neutral-dark/50 backdrop-blur-lg border-2 border-neon-cyan/30 rounded-2xl p-8 shadow-glow-cyan">
             <div className="mb-6 text-center">
               <h2 className="font-display text-3xl font-bold text-neon-cyan mb-2">
-                {isLogin ? 'Acessar Sistema' : 'Iniciar Jornada'}
+                Iniciar Jornada
               </h2>
               <p className="text-neutral-light text-sm">
-                {isLogin 
-                  ? 'Entre com suas credenciais de equipe' 
-                  : 'Cadastre sua equipe para começar'}
+                Cadastre sua equipe para começar
               </p>
             </div>
             
@@ -149,22 +151,10 @@ const LandingPage = () => {
                     Processando...
                   </span>
                 ) : (
-                  <span>{isLogin ? '🚀 Entrar no Sistema' : '🌟 Começar Seleção'}</span>
+                  <span>🌟 Começar Seleção</span>
                 )}
               </button>
             </form>
-            
-            <div className="mt-6 text-center">
-              <button
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setError('');
-                }}
-                className="text-neon-cyan hover:text-solar-orange transition-colors text-sm font-medium"
-              >
-                {isLogin ? '← Voltar para cadastro' : 'Já tem cadastro? Fazer login →'}
-              </button>
-            </div>
             
             <div className="mt-8 pt-6 border-t border-neon-cyan/20 text-center">
               <a 
