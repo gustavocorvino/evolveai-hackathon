@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -47,7 +47,7 @@ jobs:
           action: "upload"
           app_location: "/" # App source code path
           output_location: "dist" # Built app content directory
-          skip_app_build: true
+          skip_app_build: false
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
