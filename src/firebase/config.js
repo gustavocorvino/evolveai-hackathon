@@ -147,39 +147,45 @@ if (!isConfigured) {
 }
 
 // Initialize Firebase
-let app, db, auth;
+let app = null;
+let db = null;
+let auth = null;
 
 try {
-  app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
-  auth = getAuth(app);
-  
-  // Initialize App Check with reCAPTCHA v3
-  // This protects your Firebase resources from abuse
-  if (import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY) {
-    try {
-      initializeAppCheck(app, {
-        provider: new ReCaptchaV3Provider(
-          import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY
-        ),
-        isTokenAutoRefreshEnabled: true
-      });
-      console.log('✅ App Check (reCAPTCHA v3) inicializado!');
-    } catch (appCheckError) {
-      console.warn('⚠️ App Check initialization failed:', appCheckError.message);
-      console.warn('This is normal in development. Make sure reCAPTCHA is configured in Firebase Console.');
+  if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'undefined') {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
+    
+    // Initialize App Check with reCAPTCHA v3
+    // This protects your Firebase resources from abuse
+    if (import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY) {
+      try {
+        initializeAppCheck(app, {
+          provider: new ReCaptchaV3Provider(
+            import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY
+          ),
+          isTokenAutoRefreshEnabled: true
+        });
+        console.log('✅ App Check (reCAPTCHA v3) inicializado!');
+      } catch (appCheckError) {
+        console.warn('⚠️ App Check initialization failed:', appCheckError.message);
+        console.warn('This is normal in development. Make sure reCAPTCHA is configured in Firebase Console.');
+      }
+    } else {
+      console.warn('⚠️ VITE_FIREBASE_RECAPTCHA_SITE_KEY não configurado. App Check não ativo.');
+      console.warn('Para production: registre App Check em Firebase Console → Authentication → App Check');
+    }
+    
+    if (isConfigured) {
+      console.log('✅ Firebase inicializado com sucesso!');
     }
   } else {
-    console.warn('⚠️ VITE_FIREBASE_RECAPTCHA_SITE_KEY não configurado. App Check não ativo.');
-    console.warn('Para production: registre App Check em Firebase Console → Authentication → App Check');
-  }
-  
-  if (isConfigured) {
-    console.log('✅ Firebase inicializado com sucesso!');
+    console.warn('⚠️ Firebase não configurado - usando modo offline/static');
   }
 } catch (error) {
   console.error('❌ Erro ao inicializar Firebase:', error.message);
-  throw new Error(`Firebase initialization failed: ${error.message}`);
+  console.warn('Continuando sem Firebase...');
 }
 
 export { db, auth };
