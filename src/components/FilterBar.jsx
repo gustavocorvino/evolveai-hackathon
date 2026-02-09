@@ -8,7 +8,15 @@ const categories = [
   { id: 'Cases', label: 'Cases', icon: '💼' }
 ];
 
-const FilterBar = ({ selectedCategory, onCategoryChange, categoryCounts }) => {
+const FilterBar = ({ selectedCategory, onCategoryChange, categoryCounts = {}, totalCount = 0 }) => {
+  // Se não tiver categoryCounts, usa totalCount para 'all'
+  const getCategoryCount = (categoryId) => {
+    if (categoryCounts && Object.keys(categoryCounts).length > 0) {
+      return categoryCounts[categoryId] || 0;
+    }
+    return categoryId === 'all' ? totalCount : '-';
+  };
+
   return (
     <div className="mb-8">
       <h2 className="font-display text-2xl font-bold text-neutral-light mb-4">
@@ -18,7 +26,7 @@ const FilterBar = ({ selectedCategory, onCategoryChange, categoryCounts }) => {
       <div className="flex flex-wrap gap-3">
         {categories.map((category) => {
           const isActive = selectedCategory === category.id;
-          const count = categoryCounts[category.id] || 0;
+          const count = getCategoryCount(category.id);
           
           return (
             <motion.button
