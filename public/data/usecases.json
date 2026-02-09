@@ -1,0 +1,76 @@
+{
+  "useCases": [
+    {
+      "id": "uc001",
+      "title": "Automação de Atendimento ao Cliente",
+      "category": "Industria",
+      "description": "Implementar um chatbot inteligente para automatizar o atendimento inicial aos clientes, reduzindo tempo de espera e melhorando a experiência do usuário.",
+      "details": "O sistema deve ser capaz de:\n- Responder perguntas frequentes automaticamente\n- Encaminhar casos complexos para atendentes humanos\n- Aprender com interações anteriores\n- Integrar com sistemas existentes de CRM",
+      "isAvailable": true,
+      "createdAt": "2026-01-15T10:00:00Z"
+    },
+    {
+      "id": "uc002",
+      "title": "Análise Preditiva de Vendas",
+      "category": "Praticas",
+      "description": "Desenvolver um modelo de machine learning para prever tendências de vendas e otimizar estoque.",
+      "details": "Requisitos:\n- Análise de dados históricos de vendas\n- Integração com dados de mercado\n- Dashboard interativo para visualização\n- Alertas automáticos para anomalias",
+      "isAvailable": true,
+      "createdAt": "2026-01-15T10:30:00Z"
+    },
+    {
+      "id": "uc003",
+      "title": "Sistema de Recomendação Personalizada",
+      "category": "Cases",
+      "description": "Criar um sistema de recomendação que sugere produtos ou serviços baseados no perfil e histórico do cliente.",
+      "details": "Funcionalidades esperadas:\n- Algoritmo de filtragem colaborativa\n- Análise de comportamento do usuário\n- A/B testing integrado\n- Métricas de engajamento em tempo real",
+      "isAvailable": true,
+      "createdAt": "2026-01-15T11:00:00Z"
+    },
+    {
+      "id": "uc004",
+      "title": "Detecção de Fraudes Financeiras",
+      "category": "Industria",
+      "description": "Implementar um sistema de IA para detectar transações fraudulentas em tempo real.",
+      "details": "O sistema precisa:\n- Processar milhares de transações por segundo\n- Baixa latência para não impactar UX\n- Taxa de falsos positivos < 1%\n- Explicabilidade das decisões",
+      "isAvailable": true,
+      "createdAt": "2026-01-15T11:30:00Z"
+    },
+    {
+      "id": "uc005",
+      "title": "Otimização de Processos Industriais",
+      "category": "Industria",
+      "description": "Usar IoT e IA para otimizar processos de manufatura, reduzindo desperdício e aumentando eficiência.",
+      "details": "Escopo inclui:\n- Sensores IoT para coleta de dados\n- Modelo de otimização em tempo real\n- Manutenção preditiva\n- Redução de consumo energético",
+      "isAvailable": true,
+      "createdAt": "2026-01-15T12:00:00Z"
+    },
+    {
+      "id": "uc006",
+      "title": "Assistente Virtual para RH",
+      "category": "Praticas",
+      "description": "Desenvolver um assistente virtual para automatizar tarefas de RH como agendamento de férias, consulta de benefícios e onboarding.",
+      "details": "Deve incluir:\n- Integração com sistemas de folha de pagamento\n- Chatbot para dúvidas frequentes\n- Automação de workflows de aprovação\n- Portal self-service para funcionários",
+      "isAvailable": true,
+      "createdAt": "2026-01-15T12:30:00Z"
+    },
+    {
+      "id": "uc007",
+      "title": "Análise de Sentimento em Redes Sociais",
+      "category": "Cases",
+      "description": "Monitorar e analisar menções à marca em redes sociais para entender a percepção do público.",
+      "details": "Funcionalidades:\n- Coleta de dados de múltiplas plataformas\n- NLP para análise de sentimento\n- Alertas para crises de imagem\n- Relatórios automatizados",
+      "isAvailable": true,
+      "createdAt": "2026-01-15T13:00:00Z"
+    },
+    {
+      "id": "uc008",
+      "title": "Gestão Inteligente de Documentos",
+      "category": "Praticas",
+      "description": "Sistema de OCR e IA para extrair informações de documentos e automatizar classificação.",
+      "details": "Requisitos técnicos:\n- OCR com alta precisão\n- Extração de entidades (NER)\n- Classificação automática\n- Integração com SharePoint/OneDrive",
+      "isAvailable": true,
+      "createdAt": "2026-01-15T13:30:00Z"
+    }
+  ]
+}
