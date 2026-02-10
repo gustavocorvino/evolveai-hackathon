@@ -97,7 +97,7 @@ const LandingPage = () => {
               </p>
             </div>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} noValidate className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-neutral-light mb-2">
                   Nome da Equipe
@@ -111,8 +111,6 @@ const LandingPage = () => {
                            focus:border-neon-cyan focus:ring-2 focus:ring-neon-cyan/20 
                            transition-all outline-none"
                   placeholder="Digite o nome da sua equipe"
-                  required
-                  minLength={3}
                 />
               </div>
               
@@ -121,15 +119,14 @@ const LandingPage = () => {
                   Email da Equipe
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-4 py-3 bg-deep-space border-2 border-neon-cyan/30 rounded-lg 
                            text-neutral-light placeholder-neutral-light/50
                            focus:border-neon-cyan focus:ring-2 focus:ring-neon-cyan/20 
                            transition-all outline-none"
-                  placeholder="equipe@email.com"
-                  required
+                  placeholder="equipe@avanade.com"
                 />
               </div>
               
