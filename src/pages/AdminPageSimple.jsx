@@ -21,7 +21,9 @@ const AdminPageSimple = () => {
   const [uploadError, setUploadError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(null);
+  const [uploadType, setUploadType] = useState('csv'); // 'csv' ou 'json'
   const fileInputRef = useRef(null);
+  const jsonInputRef = useRef(null);
 
   // Adiciona info de seleção aos use cases
   const useCasesWithSelection = useCases.map(uc => ({
@@ -98,6 +100,86 @@ const AdminPageSimple = () => {
     };
     reader.onerror = () => {
       setUploadError('Erro ao ler arquivo');
+    };
+    reader.readAsText(file);
+  }, []);
+
+  // Upload JSON - Handler de arquivo
+  const handleJsonFileChange = useCallback((event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadError(null);
+    setUploadPreview(null);
+    setUploadSuccess(null);
+    setUploadType('json');
+
+    if (!file.name.endsWith('.json')) {
+      setUploadError('Por favor, selecione um arquivo JSON');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const jsonContent = e.target?.result;
+        const jsonData = JSON.parse(jsonContent);
+        
+        // Se não for array, tenta extrair array do objeto
+        const dataArray = Array.isArray(jsonData) ? jsonData : [jsonData];
+        
+        if (dataArray.length === 0) {
+          setUploadError('Nenhum caso de uso encontrado no JSON');
+          return;
+        }
+
+        // Converter JSON para formato do app
+        const parsedUseCases = dataArray.map((item, index) => {
+          // Mapear categoria
+          let category = item.category || 'Praticas';
+          if (!['Industria', 'Praticas', 'Cases'].includes(category)) {
+            if (category.toLowerCase().includes('industria') || category.toLowerCase().includes('industry')) {
+              category = 'Industria';
+            } else if (category.toLowerCase().includes('case')) {
+              category = 'Cases';
+            } else {
+              category = 'Praticas';
+            }
+          }
+
+          return {
+            id: item.id || `json-import-${Date.now()}-${index}`,
+            title: String(item.title || '').trim(),
+            description: String(item.description || '').trim(),
+            details: String(item.details || '').trim(),
+            category,
+            pratica: String(item.pratica || item.practice || '').trim(),
+            industria: String(item.industria || item.industry || '').trim(),
+            subcategory: item.subcategory || 'Cliente'
+          };
+        }).filter(uc => uc.title && uc.description);
+
+        if (parsedUseCases.length === 0) {
+          setUploadError('Nenhum caso de uso válido encontrado (título e descrição são obrigatórios)');
+          return;
+        }
+
+        setUploadPreview({
+          fileName: file.name,
+          useCases: parsedUseCases,
+          isJson: true
+        });
+        setShowUploadModal(true);
+      } catch (err) {
+        if (err instanceof SyntaxError) {
+          setUploadError('JSON inválido. Verifique a formatação do arquivo.');
+        } else {
+          setUploadError(err.message || 'Erro ao processar JSON');
+        }
+      }
+    };
+    reader.onerror = () => {
+      setUploadError('Erro ao ler arquivo JSON');
     };
     reader.readAsText(file);
   }, []);
@@ -198,13 +280,32 @@ const AdminPageSimple = () => {
             <div className="flex gap-3">
               {/* Upload CSV */}
               <button
-                onClick={() => setShowUploadModal(true)}
+                onClick={() => {
+                  setUploadType('csv');
+                  setShowUploadModal(true);
+                }}
                 className="px-4 py-3 bg-gradient-to-r from-cosmic-purple to-neon-cyan rounded-lg
                          font-bold text-white hover:shadow-glow-cyan
                          transition-all duration-300 flex items-center gap-2"
               >
                 📤 Importar CSV
               </button>
+
+              {/* Upload JSON */}
+              <label
+                className="px-4 py-3 bg-gradient-to-r from-solar-orange to-nova-red rounded-lg
+                         font-bold text-white hover:shadow-glow-orange cursor-pointer
+                         transition-all duration-300 flex items-center gap-2"
+              >
+                📤 Importar JSON
+                <input
+                  ref={jsonInputRef}
+                  type="file"
+                  accept=".json"
+                  onChange={handleJsonFileChange}
+                  className="hidden"
+                />
+              </label>
 
               {/* Exportar CSV */}
               <button
