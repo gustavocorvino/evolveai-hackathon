@@ -145,13 +145,6 @@ const GalleryPageSimple = () => {
                   exit={{ opacity: 0, scale: 0.9 }}
                   className={`relative ${useCase.isSelected ? 'opacity-50' : ''}`}
                 >
-                  {/* Badge de selecionado - só aparece quando selecionado */}
-                  {useCase.isSelected && (
-                    <div className="absolute -top-2 -right-2 z-10 px-3 py-1 bg-nova-red rounded-full text-white text-xs font-bold shadow-lg">
-                      ❌ Já selecionado
-                    </div>
-                  )}
-                  
                   <div 
                     onClick={() => !useCase.isSelected && handleOpenModal(useCase)}
                     className={`transition-all duration-300 ${

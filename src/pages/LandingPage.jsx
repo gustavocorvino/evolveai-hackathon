@@ -10,36 +10,43 @@ const LandingPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const validateEmail = (email) => {
+  const isValidEmail = (email) => {
     // Validação silenciosa - só aceita @avanade.com
-    return email.toLowerCase().trim().endsWith('@avanade.com');
+    const trimmed = (email || '').toLowerCase().trim();
+    return trimmed.length > 0 && trimmed.endsWith('@avanade.com');
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     setError('');
     
+    const teamName = (formData.name || '').trim();
+    const email = (formData.email || '').toLowerCase().trim();
+    
     // Validar nome
-    if (!formData.name.trim() || formData.name.trim().length < 3) {
-      setError('Nome da equipe deve ter pelo menos 3 caracteres');
-      return;
+    if (!teamName || teamName.length < 3) {
+      alert('Nome da equipe deve ter pelo menos 3 caracteres');
+      return false;
     }
     
-    // Validar email sem expor a regra
-    if (!validateEmail(formData.email)) {
-      setError('E-mail inválido');
-      return;
+    // Validar email - BLOQUEIA se não for @avanade.com
+    if (!isValidEmail(email)) {
+      alert('E-mail inválido');
+      return false;
     }
     
     setLoading(true);
     
     try {
-      login(formData.name.trim(), formData.email.trim().toLowerCase());
+      login(teamName, email);
       navigate('/gallery');
     } catch (err) {
-      setError(err.message || 'Erro ao entrar');
+      alert(err.message || 'Erro ao entrar');
       setLoading(false);
     }
+    
+    return false;
   };
   
   return (
