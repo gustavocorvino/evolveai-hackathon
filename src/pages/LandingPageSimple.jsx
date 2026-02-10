@@ -6,20 +6,43 @@ const LandingPageSimple = () => {
   const { login } = useAuth();
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   
-  const handleSubmit = async (e) => {
+  const isValidEmail = (email) => {
+    // Só aceita @avanade.com
+    const trimmed = (email || '').toLowerCase().trim();
+    return trimmed.length > 0 && trimmed.endsWith('@avanade.com');
+  };
+  
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');
+    e.stopPropagation();
+    
+    const teamName = (formData.name || '').trim();
+    const email = (formData.email || '').toLowerCase().trim();
+    
+    // Validar nome
+    if (!teamName || teamName.length < 3) {
+      alert('Nome da equipe deve ter pelo menos 3 caracteres');
+      return false;
+    }
+    
+    // Validar email - BLOQUEIA se não for @avanade.com
+    if (!isValidEmail(email)) {
+      alert('E-mail inválido');
+      return false;
+    }
+    
     setLoading(true);
     
     try {
-      login(formData.name, formData.email);
+      login(teamName, email);
       // O hook vai atualizar o estado e o App vai redirecionar
     } catch (err) {
-      setError(err.message);
+      alert(err.message || 'Erro ao entrar');
       setLoading(false);
     }
+    
+    return false;
   };
   
   return (
@@ -70,7 +93,7 @@ const LandingPageSimple = () => {
               </p>
             </div>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} noValidate className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-neutral-light mb-2">
                   Nome da Equipe
@@ -84,8 +107,6 @@ const LandingPageSimple = () => {
                            focus:border-neon-cyan focus:ring-2 focus:ring-neon-cyan/20 
                            transition-all outline-none"
                   placeholder="Digite o nome da sua equipe"
-                  required
-                  minLength={3}
                 />
               </div>
               
@@ -94,27 +115,16 @@ const LandingPageSimple = () => {
                   Email da Equipe
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-4 py-3 bg-deep-space border-2 border-neon-cyan/30 rounded-lg 
                            text-neutral-light placeholder-neutral-light/50
                            focus:border-neon-cyan focus:ring-2 focus:ring-neon-cyan/20 
                            transition-all outline-none"
-                  placeholder="equipe@email.com"
-                  required
+                  placeholder="equipe@avanade.com"
                 />
               </div>
-              
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-4 bg-nova-red/10 border-2 border-nova-red/50 rounded-lg"
-                >
-                  <p className="text-nova-red text-sm">{error}</p>
-                </motion.div>
-              )}
               
               <motion.button
                 whileHover={{ scale: 1.02 }}
