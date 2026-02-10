@@ -38,6 +38,7 @@ const AdminUseCaseManager = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
   const fileInputRef = useRef(null);
+  const jsonInputRef = useRef(null);
 
   // Stats
   const availableCount = useCases.filter(uc => uc.isAvailable).length;
@@ -283,6 +284,130 @@ const AdminUseCaseManager = () => {
     }
   };
 
+  // Função para importar JSON
+  const handleJsonUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadStatus('Lendo arquivo JSON...');
+    setError('');
+
+    try {
+      const text = await file.text();
+      const jsonData = JSON.parse(text);
+
+      // Se não for array, tenta extrair array do objeto
+      const dataArray = Array.isArray(jsonData) ? jsonData : [jsonData];
+
+      setUploadStatus(`${dataArray.length} casos encontrados. Validando...`);
+
+      const validCases = [];
+      const errors = [];
+
+      dataArray.forEach((item, index) => {
+        // Validar campos obrigatórios
+        if (!item.title) {
+          errors.push(`Item ${index + 1}: Campo 'title' é obrigatório`);
+          return;
+        }
+        if (!item.description) {
+          errors.push(`Item ${index + 1}: Campo 'description' é obrigatório`);
+          return;
+        }
+
+        // Mapear categoria do JSON para o formato do app
+        let category = item.category || 'Praticas';
+        // Se a categoria vier como texto diferente, mapear
+        if (!['Industria', 'Praticas', 'Cases'].includes(category)) {
+          // Tentar mapear categorias conhecidas
+          if (category.toLowerCase().includes('industria') || category.toLowerCase().includes('industry')) {
+            category = 'Industria';
+          } else if (category.toLowerCase().includes('case')) {
+            category = 'Cases';
+          } else {
+            category = 'Praticas'; // Default
+          }
+        }
+
+        // Mapear subcategory
+        let subcategory = item.subcategory || 'Cliente';
+        if (!['Cliente', 'Interno'].includes(subcategory)) {
+          subcategory = subcategory.toLowerCase().includes('interno') ? 'Interno' : 'Cliente';
+        }
+
+        validCases.push({
+          title: String(item.title || '').trim(),
+          description: String(item.description || '').trim(),
+          details: String(item.details || '').trim(),
+          category,
+          pratica: String(item.pratica || item.practice || '').trim(),
+          industria: String(item.industria || item.industry || '').trim(),
+          subcategory,
+          isAvailable: item.isAvailable !== false, // Default true
+          selectedByTeamId: null,
+          selectedByTeamName: null,
+          selectedByTeamEmail: null,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+      });
+
+      if (errors.length > 0 && validCases.length === 0) {
+        setError(`Erros encontrados:\n${errors.join('\n')}`);
+        setUploading(false);
+        setUploadStatus('');
+        if (jsonInputRef.current) jsonInputRef.current.value = '';
+        return;
+      }
+
+      if (validCases.length === 0) {
+        setError('Nenhum caso de uso válido encontrado no arquivo JSON');
+        setUploading(false);
+        setUploadStatus('');
+        if (jsonInputRef.current) jsonInputRef.current.value = '';
+        return;
+      }
+
+      // Inserir casos
+      setUploadStatus(`Inserindo ${validCases.length} casos...`);
+      const useCasesRef = collection(db, 'useCases');
+      
+      let successCount = 0;
+      for (const caseData of validCases) {
+        try {
+          await addDoc(useCasesRef, caseData);
+          successCount++;
+          setUploadStatus(`Inserindo ${successCount}/${validCases.length} casos...`);
+        } catch (docError) {
+          console.error('Error inserting case:', docError);
+          errors.push(`Erro ao inserir "${caseData.title}": ${docError.message}`);
+        }
+      }
+
+      if (errors.length > 0) {
+        setError(`${successCount} casos importados com sucesso.\n\nErros:\n${errors.join('\n')}`);
+        setUploadStatus('');
+      } else {
+        setUploadStatus(`✅ ${successCount} casos de uso importados do JSON!`);
+        setTimeout(() => {
+          setUploadStatus('');
+          if (jsonInputRef.current) jsonInputRef.current.value = '';
+        }, 3000);
+      }
+
+    } catch (err) {
+      console.error('Error uploading JSON:', err);
+      if (err instanceof SyntaxError) {
+        setError('Erro: O arquivo não é um JSON válido. Verifique a formatação.');
+      } else {
+        setError('Erro ao processar arquivo JSON: ' + err.message);
+      }
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const downloadTemplate = () => {
     // Criar template Excel
     const template = [
@@ -424,6 +549,25 @@ const AdminUseCaseManager = () => {
               type="file"
               accept=".xlsx,.xls"
               onChange={handleFileUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+          </label>
+
+          <label
+            className={`px-6 py-3 font-display font-bold rounded-lg cursor-pointer
+                     transform hover:scale-105 transition-all duration-300
+                     ${uploading 
+                       ? 'bg-neutral-dark/50 text-neutral-light cursor-not-allowed' 
+                       : 'bg-neon-cyan text-deep-space hover:shadow-glow-cyan'
+                     }`}
+          >
+            {uploading ? '⏳ Processando...' : '📤 Importar JSON'}
+            <input
+              ref={jsonInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleJsonUpload}
               disabled={uploading}
               className="hidden"
             />
