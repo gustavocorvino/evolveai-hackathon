@@ -25,14 +25,12 @@ const LandingPageSimple = () => {
     // Validar nome
     if (!teamName || teamName.length < 3) {
       setError('Nome da equipe deve ter pelo menos 3 caracteres');
-      alert('Nome da equipe deve ter pelo menos 3 caracteres');
       return false;
     }
     
     // Validar email - BLOQUEIA se não for @avanade.com
     if (!isValidEmail(email)) {
       setError('Apenas e-mails @avanade.com são permitidos');
-      alert('⚠️ E-mail inválido!\n\nApenas e-mails @avanade.com são permitidos.\n\nExemplo: sua.equipe@avanade.com');
       return false;
     }
     
@@ -42,7 +40,7 @@ const LandingPageSimple = () => {
       login(teamName, email);
       // O hook vai atualizar o estado e o App vai redirecionar
     } catch (err) {
-      alert(err.message || 'Erro ao entrar');
+      setError(err.message || 'Erro ao entrar');
       setLoading(false);
     }
     
