@@ -6,6 +6,8 @@
  * DELETE - Remove uma seleção (liberar caso)
  */
 
+const fetch = require('node-fetch');
+
 module.exports = async function (context, req) {
   const containerSas = process.env.BLOB_CONTAINER_SAS_URL;
   const blobName = process.env.SELECTIONS_BLOB_NAME || 'data/selections.json';

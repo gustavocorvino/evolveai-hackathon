@@ -1,3 +1,5 @@
+const fetch = require('node-fetch');
+
 module.exports = async function (context, req) {
   const containerSas = process.env.BLOB_CONTAINER_SAS_URL; // e.g. https://<account>.blob.core.windows.net/<container>?<sas>
   const blobName = process.env.SELECTIONS_BLOB_NAME || 'selections/selection.csv';
