@@ -18,7 +18,7 @@ import {
 // 3. Copie o hash gerado e substitua abaixo
 // 
 // Hash atual corresponde à senha: evolveai2026
-const ADMIN_PASSWORD_HASH = 'b0c30ed567e77daa9ac0810b4477e8e7352bc62886e8e8f9312e6d52c85194a5';
+const ADMIN_PASSWORD_HASH = '66a469fab34dcea7975023ef4da567be6d6d65e87f6ec57204022d7d277bbaab';
 
 // Função para calcular hash SHA-256
 const hashPassword = async (password) => {
