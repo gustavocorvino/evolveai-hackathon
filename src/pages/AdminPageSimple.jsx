@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useStaticUseCases } from '../hooks/useStaticUseCases';
@@ -9,11 +9,37 @@ import {
   releaseSelection 
 } from '../services/data.service';
 
+// ============================================
+// CONFIGURAÇÃO DE SENHA (Hash SHA-256)
+// ============================================
+// Para trocar a senha:
+// 1. Abra o console do browser (F12)
+// 2. Execute: crypto.subtle.digest('SHA-256', new TextEncoder().encode('SUA_NOVA_SENHA')).then(h => console.log(Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join('')))
+// 3. Copie o hash gerado e substitua abaixo
+// 
+// Hash atual corresponde à senha: evolveai2026
+const ADMIN_PASSWORD_HASH = 'b0c30ed567e77daa9ac0810b4477e8e7352bc62886e8e8f9312e6d52c85194a5';
+
+// Função para calcular hash SHA-256
+const hashPassword = async (password) => {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+};
+
 const AdminPageSimple = () => {
   const { selections, refreshSelections } = useAuth();
   const { useCases, loading, refreshUseCases } = useStaticUseCases();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [modalUseCase, setModalUseCase] = useState(null);
+  
+  // Estados para autenticação admin
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [authError, setAuthError] = useState('');
   
   // Estados para upload CSV
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -24,6 +50,41 @@ const AdminPageSimple = () => {
   const [uploadType, setUploadType] = useState('csv'); // 'csv' ou 'json'
   const fileInputRef = useRef(null);
   const jsonInputRef = useRef(null);
+
+  // Verificar autenticação salva na sessão
+  useEffect(() => {
+    const savedAuth = sessionStorage.getItem('admin_authenticated');
+    if (savedAuth === 'true') {
+      setIsAuthenticated(true);
+    }
+    setAuthChecking(false);
+  }, []);
+
+  // Função de login admin
+  const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    
+    try {
+      const inputHash = await hashPassword(passwordInput);
+      
+      if (inputHash === ADMIN_PASSWORD_HASH) {
+        sessionStorage.setItem('admin_authenticated', 'true');
+        setIsAuthenticated(true);
+        setPasswordInput('');
+      } else {
+        setAuthError('Senha incorreta');
+      }
+    } catch (err) {
+      setAuthError('Erro ao verificar senha');
+    }
+  };
+
+  // Função de logout admin
+  const handleAdminLogout = () => {
+    sessionStorage.removeItem('admin_authenticated');
+    setIsAuthenticated(false);
+  };
 
   // Adiciona info de seleção aos use cases
   const useCasesWithSelection = useCases.map(uc => ({
@@ -254,10 +315,82 @@ const AdminPageSimple = () => {
     document.body.removeChild(link);
   };
 
-  if (loading) {
+  if (loading || authChecking) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-neon-cyan text-xl">Carregando...</div>
+      </div>
+    );
+  }
+
+  // Tela de login admin
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          <div className="bg-neutral-dark/80 backdrop-blur-lg border-2 border-cosmic-purple/50 rounded-2xl p-8 shadow-glow-purple">
+            <div className="text-center mb-8">
+              <div className="text-6xl mb-4">🔐</div>
+              <h1 className="font-display text-3xl font-bold text-cosmic-purple mb-2">
+                Área Restrita
+              </h1>
+              <p className="text-neutral-light text-sm">
+                Digite a senha de administrador para continuar
+              </p>
+            </div>
+            
+            <form onSubmit={handleAdminLogin} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-light mb-2">
+                  Senha de Admin
+                </label>
+                <input
+                  type="password"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  className="w-full px-4 py-3 bg-deep-space border-2 border-cosmic-purple/30 rounded-lg 
+                           text-neutral-light placeholder-neutral-light/50
+                           focus:border-cosmic-purple focus:ring-2 focus:ring-cosmic-purple/20 
+                           transition-all outline-none"
+                  placeholder="Digite a senha..."
+                  autoFocus
+                />
+              </div>
+              
+              {authError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3 bg-red-500/20 border-2 border-red-500 rounded-lg"
+                >
+                  <p className="text-red-400 text-sm font-medium">⚠️ {authError}</p>
+                </motion.div>
+              )}
+              
+              <button
+                type="submit"
+                className="w-full py-4 bg-gradient-to-r from-cosmic-purple to-neon-cyan 
+                         rounded-lg font-bold text-white text-lg
+                         hover:shadow-glow-purple transition-all duration-300"
+              >
+                🔓 Entrar
+              </button>
+            </form>
+            
+            <div className="mt-6 text-center">
+              <a 
+                href="/" 
+                className="text-neutral-light/70 text-sm hover:text-neon-cyan transition-colors"
+              >
+                ← Voltar para o início
+              </a>
+            </div>
+          </div>
+        </motion.div>
       </div>
     );
   }
@@ -315,6 +448,16 @@ const AdminPageSimple = () => {
                          transition-all duration-300 flex items-center gap-2"
               >
                 📥 Exportar CSV
+              </button>
+
+              {/* Logout */}
+              <button
+                onClick={handleAdminLogout}
+                className="px-4 py-3 bg-red-500/20 border-2 border-red-500 rounded-lg
+                         font-bold text-red-400 hover:bg-red-500 hover:text-white
+                         transition-all duration-300 flex items-center gap-2"
+              >
+                🚪 Sair
               </button>
             </div>
           </div>
