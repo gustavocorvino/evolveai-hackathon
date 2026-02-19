@@ -6,6 +6,7 @@ const LandingPageSimple = () => {
   const { login } = useAuth();
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   
   const isValidEmail = (email) => {
     // Só aceita @avanade.com
@@ -16,19 +17,22 @@ const LandingPageSimple = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    setError('');
     
     const teamName = (formData.name || '').trim();
     const email = (formData.email || '').toLowerCase().trim();
     
     // Validar nome
     if (!teamName || teamName.length < 3) {
+      setError('Nome da equipe deve ter pelo menos 3 caracteres');
       alert('Nome da equipe deve ter pelo menos 3 caracteres');
       return false;
     }
     
     // Validar email - BLOQUEIA se não for @avanade.com
     if (!isValidEmail(email)) {
-      alert('E-mail inválido');
+      setError('Apenas e-mails @avanade.com são permitidos');
+      alert('⚠️ E-mail inválido!\n\nApenas e-mails @avanade.com são permitidos.\n\nExemplo: sua.equipe@avanade.com');
       return false;
     }
     
@@ -124,7 +128,21 @@ const LandingPageSimple = () => {
                            transition-all outline-none"
                   placeholder="equipe@avanade.com"
                 />
+                <p className="text-xs text-neutral-light/70 mt-1">
+                  Apenas e-mails @avanade.com são aceitos
+                </p>
               </div>
+              
+              {/* Mensagem de Erro */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-4 bg-red-500/20 border-2 border-red-500 rounded-lg"
+                >
+                  <p className="text-red-400 text-sm font-medium">⚠️ {error}</p>
+                </motion.div>
+              )}
               
               <motion.button
                 whileHover={{ scale: 1.02 }}
