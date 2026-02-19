@@ -9,7 +9,8 @@
       "/*.json",
       "/*.txt",
       "/*.ico",
-      "/*.svg"
+      "/*.svg",
+      "/api/*"
     ]
   },
   "mimeTypes": {
@@ -48,9 +49,8 @@
   },
   "routes": [
     {
-      "route": "/admin/*",
-      "allowedRoles": ["admin"],
-      "statusCode": 403
+      "route": "/api/*",
+      "allowedRoles": ["anonymous"]
     },
     {
       "route": "/*",
