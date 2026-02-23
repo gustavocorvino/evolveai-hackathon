@@ -11,12 +11,20 @@ function httpsRequest(urlString, options = {}) {
   return new Promise((resolve, reject) => {
     const url = new URL(urlString);
     
+    // Calcular Content-Length para evitar Transfer-Encoding: chunked
+    const bodyBuffer = options.body ? Buffer.from(options.body, 'utf8') : null;
+    
+    const reqHeaders = { ...options.headers };
+    if (bodyBuffer) {
+      reqHeaders['Content-Length'] = bodyBuffer.length;
+    }
+    
     const reqOptions = {
       hostname: url.hostname,
       port: 443,
       path: url.pathname + url.search,
       method: options.method || 'GET',
-      headers: options.headers || {}
+      headers: reqHeaders
     };
 
     const req = https.request(reqOptions, (res) => {
@@ -33,8 +41,8 @@ function httpsRequest(urlString, options = {}) {
 
     req.on('error', reject);
     
-    if (options.body) {
-      req.write(options.body);
+    if (bodyBuffer) {
+      req.write(bodyBuffer);
     }
     req.end();
   });
