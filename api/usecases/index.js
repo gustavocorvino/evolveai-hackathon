@@ -5,7 +5,7 @@
  * POST - Substitui TODOS os casos de uso (upload de CSV/JSON)
  */
 
-const fetch = require('node-fetch');
+// Node 18+ has native fetch
 
 module.exports = async function (context, req) {
   const containerSas = process.env.BLOB_CONTAINER_SAS_URL;

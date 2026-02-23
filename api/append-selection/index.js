@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+// Node 18+ has native fetch
 
 module.exports = async function (context, req) {
   const containerSas = process.env.BLOB_CONTAINER_SAS_URL; // e.g. https://<account>.blob.core.windows.net/<container>?<sas>
