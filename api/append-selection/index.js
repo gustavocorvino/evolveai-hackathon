@@ -79,7 +79,15 @@ module.exports = async function (context, req) {
   const blobUrl = `${baseUrl}/${blobName}${sasToken}`;
 
   try {
-    const body = req.body;
+    // Parsear body (pode vir como string ou objeto)
+    let body = req.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        body = {};
+      }
+    }
     
     if (!body || !body.useCaseId) {
       context.res = {

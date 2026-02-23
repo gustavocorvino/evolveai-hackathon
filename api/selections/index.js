@@ -104,7 +104,15 @@ module.exports = async function (context, req) {
 
     // POST - Adiciona/atualiza seleção
     if (req.method === 'POST') {
-      const body = req.body;
+      // Parsear body (pode vir como string ou objeto)
+      let body = req.body;
+      if (typeof body === 'string') {
+        try {
+          body = JSON.parse(body);
+        } catch (e) {
+          body = {};
+        }
+      }
       
       if (!body || !body.useCaseId) {
         context.res = {
