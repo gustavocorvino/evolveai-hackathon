@@ -1,17 +1,9 @@
 /**
- * Azure Function para gerenciar seleções no Blob Storage
- * 
- * GET - Retorna todas as seleções
- * POST - Adiciona/atualiza uma seleção
- * DELETE - Remove uma seleção (liberar caso)
+ * Azure Function para gerenciar seleções
+ * MODO SIMPLIFICADO: Retorna resposta estática (sem Blob Storage)
  */
 
-// Node 18+ has native fetch
-
 module.exports = async function (context, req) {
-  const containerSas = process.env.BLOB_CONTAINER_SAS_URL;
-  const blobName = process.env.SELECTIONS_BLOB_NAME || 'data/selections.json';
-
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
@@ -19,10 +11,33 @@ module.exports = async function (context, req) {
     'Access-Control-Allow-Headers': 'Content-Type'
   };
 
+  // CORS preflight
   if (req.method === 'OPTIONS') {
     context.res = { status: 204, headers };
     return;
   }
+
+  // GET - Retorna seleções vazias (cada client usa localStorage)
+  if (req.method === 'GET') {
+    context.res = {
+      status: 200,
+      headers,
+      body: { success: true, source: 'static', selections: {}, message: 'Usando localStorage local' }
+    };
+    return;
+  }
+
+  // POST/DELETE - Aceita mas não persiste (localStorage no client faz isso)
+  context.res = {
+    status: 200,
+    headers,
+    body: { success: true, source: 'static', message: 'Seleção salva localmente no navegador' }
+  };
+  return;
+  
+  // === CÓDIGO ABAIXO DESATIVADO - BLOB STORAGE NÃO CONFIGURADO ===
+  const containerSas = process.env.BLOB_CONTAINER_SAS_URL;
+  const blobName = process.env.SELECTIONS_BLOB_NAME || 'data/selections.json';
 
   // Fallback se Blob não configurado
   if (!containerSas) {

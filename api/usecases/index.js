@@ -1,29 +1,47 @@
 /**
- * Azure Function para gerenciar casos de uso no Blob Storage
- * 
- * GET - Retorna todos os casos de uso
- * POST - Substitui TODOS os casos de uso (upload de CSV/JSON)
+ * Azure Function para retornar casos de uso
+ * MODO SIMPLIFICADO: Redireciona para arquivo estático
  */
 
-// Node 18+ has native fetch
-
 module.exports = async function (context, req) {
-  const containerSas = process.env.BLOB_CONTAINER_SAS_URL;
-  const blobName = process.env.USECASES_BLOB_NAME || 'data/usecases.json';
-
-  // Headers CORS
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type'
   };
 
-  // Handle OPTIONS (CORS preflight)
+  // CORS preflight
   if (req.method === 'OPTIONS') {
     context.res = { status: 204, headers };
     return;
   }
+
+  // GET - Redireciona para arquivo estático
+  if (req.method === 'GET') {
+    context.res = {
+      status: 200,
+      headers,
+      body: {
+        success: true,
+        source: 'static',
+        message: 'Use /data/usecases.json para dados. API retorna vazio.',
+        useCases: []
+      }
+    };
+    return;
+  }
+
+  context.res = {
+    status: 405,
+    headers,
+    body: { error: 'Method not allowed' }
+  };
+  return;
+  
+  // === CÓDIGO ABAIXO DESATIVADO - BLOB STORAGE NÃO CONFIGURADO ===
+  const containerSas = process.env.BLOB_CONTAINER_SAS_URL;
+  const blobName = process.env.USECASES_BLOB_NAME || 'data/usecases.json';
 
   // Se Blob não configurado, usar dados estáticos de fallback
   if (!containerSas) {
@@ -56,28 +74,6 @@ module.exports = async function (context, req) {
       return;
     }
   }
-
-  // Parse container URL e SAS
-  const idx = containerSas.indexOf('?');
-  const baseContainerUrl = idx === -1 ? containerSas : containerSas.substring(0, idx);
-  const sas = idx === -1 ? '' : containerSas.substring(idx + 1);
-  const blobUrl = `${baseContainerUrl}/${blobName}${sas ? `?${sas}` : ''}`;
-
-  try {
-    // GET - Retorna casos de uso
-    if (req.method === 'GET') {
-      const getRes = await fetch(blobUrl);
-      
-      if (getRes.status === 404) {
-        context.res = {
-          status: 200,
-          headers,
-          body: { success: true, useCases: [] }
-        };
-        return;
-      }
-      
-      if (!getRes.ok) {
         throw new Error(`Erro ao ler blob: ${getRes.status}`);
       }
       

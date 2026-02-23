@@ -1,17 +1,56 @@
-// Node 18+ has native fetch
+/**
+ * Azure Function para append de seleção
+ * MODO SIMPLIFICADO: Aceita POST mas não persiste (localStorage no client)
+ */
 
 module.exports = async function (context, req) {
-  const containerSas = process.env.BLOB_CONTAINER_SAS_URL; // e.g. https://<account>.blob.core.windows.net/<container>?<sas>
-  const blobName = process.env.SELECTIONS_BLOB_NAME || 'selections/selection.csv';
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  };
 
-  if (!containerSas) {
-    context.log.error('BLOB_CONTAINER_SAS_URL not configured');
+  // CORS preflight
+  if (req.method === 'OPTIONS') {
+    context.res = { status: 204, headers };
+    return;
+  }
+
+  // POST - Aceita mas não persiste centralmente
+  if (req.method === 'POST') {
     context.res = {
-      status: 500,
-      body: { error: 'Storage not configured' }
+      status: 200,
+      headers,
+      body: { 
+        success: true, 
+        source: 'static',
+        message: 'Seleção registrada localmente no navegador'
+      }
     };
     return;
   }
+
+  context.res = {
+    status: 405,
+    headers,
+    body: { error: 'Method not allowed' }
+  };
+};
+
+// === CÓDIGO ABAIXO DESATIVADO - BLOB STORAGE NÃO CONFIGURADO ===
+/*
+const containerSas = process.env.BLOB_CONTAINER_SAS_URL; // e.g. https://<account>.blob.core.windows.net/<container>?<sas>
+const blobName = process.env.SELECTIONS_BLOB_NAME || 'selections/selection.csv';
+
+if (!containerSas) {
+  context.log.error('BLOB_CONTAINER_SAS_URL not configured');
+  context.res = {
+    status: 500,
+    body: { error: 'Storage not configured' }
+  };
+  return;
+}
 
   // parse container url and sas
   const idx = containerSas.indexOf('?');
