@@ -106,6 +106,11 @@ module.exports = async function (context, req) {
     if (req.method === 'POST') {
       // Parsear body (pode vir como string ou objeto)
       let body = req.body;
+      
+      // Log para debug
+      context.log('Raw body type:', typeof body);
+      context.log('Raw body:', JSON.stringify(body));
+      
       if (typeof body === 'string') {
         try {
           body = JSON.parse(body);
@@ -114,10 +119,22 @@ module.exports = async function (context, req) {
         }
       }
       
+      // Se body ainda é null/undefined, retorna erro com debug info
       if (!body || !body.useCaseId) {
         context.res = {
           status: 400,
           headers,
+          body: { 
+            error: 'Body deve conter useCaseId',
+            debug: {
+              rawBodyType: typeof req.body,
+              rawBody: req.body ? JSON.stringify(req.body).substring(0, 100) : null,
+              parsedBody: body
+            }
+          }
+        };
+        return;
+      }
           body: { error: 'Body deve conter useCaseId' }
         };
         return;
