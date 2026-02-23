@@ -1,35 +1,32 @@
 /**
  * Azure Function para adicionar seleção
- * Usa módulo https nativo do Node
+ * POST - Adiciona uma seleção ao Blob Storage
  */
 
 const https = require('https');
-const http = require('http');
 const { URL } = require('url');
 
-// Helper para fazer requisições HTTP/HTTPS
-function httpRequest(urlString, options = {}) {
+// Helper para fazer requisições HTTPS
+function httpsRequest(urlString, options = {}) {
   return new Promise((resolve, reject) => {
     const url = new URL(urlString);
-    const protocol = url.protocol === 'https:' ? https : http;
     
     const reqOptions = {
       hostname: url.hostname,
-      port: url.port || (url.protocol === 'https:' ? 443 : 80),
+      port: 443,
       path: url.pathname + url.search,
       method: options.method || 'GET',
       headers: options.headers || {}
     };
 
-    const req = protocol.request(reqOptions, (res) => {
+    const req = https.request(reqOptions, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         resolve({
           status: res.statusCode,
           ok: res.statusCode >= 200 && res.statusCode < 300,
-          text: () => Promise.resolve(data),
-          json: () => Promise.resolve(data ? JSON.parse(data) : null)
+          data: data
         });
       });
     });
@@ -67,7 +64,6 @@ module.exports = async function (context, req) {
 
   // Fallback se Blob não configurado
   if (!containerSas) {
-    context.log.warn('BLOB_CONTAINER_SAS_URL não configurado');
     context.res = {
       status: 200,
       headers,
@@ -96,9 +92,9 @@ module.exports = async function (context, req) {
 
     // Buscar seleções existentes
     let selections = {};
-    const getRes = await httpRequest(blobUrl);
-    if (getRes.ok) {
-      const data = await getRes.json();
+    const getRes = await httpsRequest(blobUrl);
+    if (getRes.ok && getRes.data) {
+      const data = JSON.parse(getRes.data);
       selections = data.selections || data || {};
     }
 
@@ -111,7 +107,7 @@ module.exports = async function (context, req) {
     };
 
     // Salvar no blob
-    const putRes = await httpRequest(blobUrl, {
+    const putRes = await httpsRequest(blobUrl, {
       method: 'PUT',
       headers: {
         'x-ms-blob-type': 'BlockBlob',
@@ -121,8 +117,7 @@ module.exports = async function (context, req) {
     });
 
     if (!putRes.ok) {
-      const errorText = await putRes.text();
-      throw new Error(`Blob write error: ${putRes.status} - ${errorText}`);
+      throw new Error(`Blob write error: ${putRes.status} - ${putRes.data}`);
     }
 
     context.res = {
