@@ -135,10 +135,6 @@ module.exports = async function (context, req) {
         };
         return;
       }
-          body: { error: 'Body deve conter useCaseId' }
-        };
-        return;
-      }
 
       // Buscar seleções existentes
       let selections = {};
