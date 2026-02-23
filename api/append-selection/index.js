@@ -1,7 +1,47 @@
 /**
- * Azure Function para adicionar seleção (endpoint simplificado)
- * POST - Adiciona uma seleção ao Blob Storage
+ * Azure Function para adicionar seleção
+ * Usa módulo https nativo do Node
  */
+
+const https = require('https');
+const http = require('http');
+const { URL } = require('url');
+
+// Helper para fazer requisições HTTP/HTTPS
+function httpRequest(urlString, options = {}) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(urlString);
+    const protocol = url.protocol === 'https:' ? https : http;
+    
+    const reqOptions = {
+      hostname: url.hostname,
+      port: url.port || (url.protocol === 'https:' ? 443 : 80),
+      path: url.pathname + url.search,
+      method: options.method || 'GET',
+      headers: options.headers || {}
+    };
+
+    const req = protocol.request(reqOptions, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        resolve({
+          status: res.statusCode,
+          ok: res.statusCode >= 200 && res.statusCode < 300,
+          text: () => Promise.resolve(data),
+          json: () => Promise.resolve(data ? JSON.parse(data) : null)
+        });
+      });
+    });
+
+    req.on('error', reject);
+    
+    if (options.body) {
+      req.write(options.body);
+    }
+    req.end();
+  });
+}
 
 module.exports = async function (context, req) {
   const containerSas = process.env.BLOB_CONTAINER_SAS_URL;
@@ -31,7 +71,7 @@ module.exports = async function (context, req) {
     context.res = {
       status: 200,
       headers,
-      body: { success: true, source: 'fallback', message: 'Seleção não persistida (storage não configurado)' }
+      body: { success: true, source: 'fallback', message: 'Storage não configurado' }
     };
     return;
   }
@@ -56,7 +96,7 @@ module.exports = async function (context, req) {
 
     // Buscar seleções existentes
     let selections = {};
-    const getRes = await fetch(blobUrl);
+    const getRes = await httpRequest(blobUrl);
     if (getRes.ok) {
       const data = await getRes.json();
       selections = data.selections || data || {};
@@ -71,7 +111,7 @@ module.exports = async function (context, req) {
     };
 
     // Salvar no blob
-    const putRes = await fetch(blobUrl, {
+    const putRes = await httpRequest(blobUrl, {
       method: 'PUT',
       headers: {
         'x-ms-blob-type': 'BlockBlob',
