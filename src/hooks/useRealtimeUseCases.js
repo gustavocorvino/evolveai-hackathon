@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { subscribeToUseCases } from '../services/usecase.service';
+import { subscribeToUseCases } from '../services/usecase.static.service';
 
 /**
  * Custom React Hook for real-time use cases
- * Automatically updates when any use case changes in Firestore
+ * Obtém dados do arquivo estático mesclado com seleções do Blob Storage
+ * Atualiza via polling a cada 5 segundos
  */
 export function useRealtimeUseCases() {
   const [useCases, setUseCases] = useState([]);

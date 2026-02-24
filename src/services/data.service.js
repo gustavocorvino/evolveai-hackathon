@@ -288,27 +288,39 @@ function parseCSVLine(line) {
  * Gerar CSV a partir de casos de uso e seleções
  */
 export function generateCSVExport(useCases, selections) {
-  const headers = ['ID', 'Titulo', 'Categoria', 'Status', 'Equipe', 'Email', 'Data Selecao', 'Descricao', 'Detalhes'];
+  // BOM UTF-8 para Excel reconhecer corretamente
+  const BOM = '\uFEFF';
+  const headers = ['ID', 'Titulo', 'Categoria', 'Subcategoria', 'Status', 'Equipe', 'Email', 'Data Selecao'];
+  
+  // Função para limpar texto
+  const clean = (text) => {
+    if (!text) return '';
+    return String(text).replace(/[\r\n;]+/g, ' ').replace(/"/g, "'").trim();
+  };
   
   const rows = useCases.map(uc => {
     const selection = selections[uc.id];
+    // Aceita tanto formato antigo (teamName/email) quanto novo (visitorName/visitorEmail)
+    const teamName = selection?.visitorName || selection?.teamName || '';
+    const teamEmail = selection?.visitorEmail || selection?.email || '';
+    const timestamp = selection?.timestamp;
+    
     return [
-      uc.id,
-      uc.title,
-      uc.category,
+      clean(uc.id),
+      clean(uc.title),
+      clean(uc.category),
+      clean(uc.subcategory || uc.industria || uc.pratica || ''),
       selection ? 'Selecionado' : 'Disponivel',
-      selection?.teamName || '',
-      selection?.email || '',
-      selection?.timestamp ? new Date(selection.timestamp).toLocaleString('pt-BR') : '',
-      uc.description?.replace(/"/g, '""') || '',
-      uc.details?.replace(/"/g, '""') || ''
+      clean(teamName),
+      clean(teamEmail),
+      timestamp ? new Date(timestamp).toLocaleString('pt-BR') : ''
     ];
   });
 
-  const csvContent = [
+  const csvContent = BOM + [
     headers.join(';'),
-    ...rows.map(row => row.map(cell => `"${cell}"`).join(';'))
-  ].join('\n');
+    ...rows.map(row => row.join(';'))
+  ].join('\r\n');
 
   return csvContent;
 }

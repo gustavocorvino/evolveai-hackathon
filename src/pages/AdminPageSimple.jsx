@@ -566,13 +566,13 @@ const AdminPageSimple = () => {
                 {useCase.isSelected && useCase.selectedBy && (
                   <div className="mt-3 p-3 bg-solar-orange/20 rounded-lg border border-solar-orange/30">
                     <p className="text-solar-orange font-bold text-sm mb-1">
-                      👥 {useCase.selectedBy.teamName}
+                      👥 {useCase.selectedBy.visitorName || useCase.selectedBy.teamName || 'Equipe'}
                     </p>
                     <p className="text-neutral-light/70 text-xs">
-                      📧 {useCase.selectedBy.email}
+                      📧 {useCase.selectedBy.visitorEmail || useCase.selectedBy.email || 'N/A'}
                     </p>
                     <p className="text-neutral-light/50 text-xs mt-1">
-                      🕐 {new Date(useCase.selectedBy.timestamp).toLocaleString('pt-BR')}
+                      🕐 {useCase.selectedBy.timestamp ? new Date(useCase.selectedBy.timestamp).toLocaleString('pt-BR') : 'N/A'}
                     </p>
                     
                     {/* Botão Liberar Caso */}
@@ -643,10 +643,10 @@ const AdminPageSimple = () => {
                 {modalUseCase.isSelected ? (
                   <div>
                     <p className="text-solar-orange font-bold mb-2">✓ Selecionado por:</p>
-                    <p className="text-white font-bold text-lg">{modalUseCase.selectedBy?.teamName}</p>
-                    <p className="text-neutral-light">📧 {modalUseCase.selectedBy?.email}</p>
+                    <p className="text-white font-bold text-lg">{modalUseCase.selectedBy?.visitorName || modalUseCase.selectedBy?.teamName || 'Equipe'}</p>
+                    <p className="text-neutral-light">📧 {modalUseCase.selectedBy?.visitorEmail || modalUseCase.selectedBy?.email || 'N/A'}</p>
                     <p className="text-neutral-light/70 text-sm mt-2">
-                      🕐 {new Date(modalUseCase.selectedBy?.timestamp).toLocaleString('pt-BR')}
+                      🕐 {modalUseCase.selectedBy?.timestamp ? new Date(modalUseCase.selectedBy.timestamp).toLocaleString('pt-BR') : 'N/A'}
                     </p>
                   </div>
                 ) : (

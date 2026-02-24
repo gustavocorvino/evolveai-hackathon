@@ -52,31 +52,40 @@ const AdminSelectionReports = () => {
     ? selectedCases 
     : casesByCategory[selectedCategory];
 
-  // Export to CSV
+  // Export to CSV (usando ; como separador para PT-BR Excel)
   const handleExportCSV = () => {
     if (selectedCases.length === 0) {
       alert('Não há casos selecionados para exportar.');
       return;
     }
 
-    // CSV Headers
-    const headers = ['Caso de Uso', 'Categoria', 'Nome da Equipe', 'Email da Equipe'];
+    // CSV Headers - separador ; para Excel PT-BR
+    const headers = ['Caso de Uso', 'Categoria', 'Subcategoria', 'Nome da Equipe', 'Email da Equipe', 'Data Selecao'];
     
-    // CSV Rows
+    // Função para limpar texto para CSV
+    const cleanText = (text) => {
+      if (!text) return '';
+      // Remove quebras de linha, aspas e ponto-e-vírgula
+      return String(text).replace(/[\r\n]+/g, ' ').replace(/["';]/g, ' ').trim();
+    };
+    
+    // CSV Rows - usando ; como separador
     const rows = selectedCases.map(uc => [
-      `"${uc.title.replace(/"/g, '""')}"`, // Escape quotes
-      uc.category,
-      `"${(uc.selectedByTeamName || 'N/A').replace(/"/g, '""')}"`,
-      `"${(uc.selectedByTeamEmail || 'N/A').replace(/"/g, '""')}"`
+      cleanText(uc.title),
+      cleanText(uc.category),
+      cleanText(uc.subcategory || uc.industria || uc.pratica || ''),
+      cleanText(uc.selectedByTeamName || 'N/A'),
+      cleanText(uc.selectedByTeamEmail || 'N/A'),
+      uc.selectionTimestamp ? new Date(uc.selectionTimestamp).toLocaleString('pt-BR') : 'N/A'
     ]);
 
-    // Build CSV content
+    // Build CSV content com separador ;
     const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n');
+      headers.join(';'),
+      ...rows.map(row => row.join(';'))
+    ].join('\r\n');
 
-    // Create blob and download
+    // Create blob with BOM for UTF-8 recognition
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
@@ -88,6 +97,7 @@ const AdminSelectionReports = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // Load selections from blob storage (serverless)

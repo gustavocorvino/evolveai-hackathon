@@ -153,10 +153,12 @@ module.exports = async function (context, req) {
       }
 
       // Adicionar/atualizar seleção
+      // Aceita tanto formato novo (visitor*) quanto legado (team*)
       selections[body.useCaseId] = {
-        visitorId: body.visitorId || body.visitorEmail || 'anonymous',
-        visitorName: body.visitorName || 'Anônimo',
-        visitorEmail: body.visitorEmail || '',
+        visitorId: body.visitorId || body.teamId || body.visitorEmail || body.email || 'anonymous',
+        visitorName: body.visitorName || body.teamName || 'Anônimo',
+        visitorEmail: body.visitorEmail || body.email || '',
+        useCaseTitle: body.useCaseTitle || body.details || '',
         timestamp: new Date().toISOString()
       };
 
